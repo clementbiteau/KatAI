@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 4 (Firebase remplace Supabase ; aucun plafond de temps), à valider. Date : 2026-10-16.
+Statut : étape 1, version 4, validée le 2026-10-16. Date : 2026-10-16.
 
 ## 1. Objectif
 
