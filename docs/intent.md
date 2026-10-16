@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 2 (intègre les réponses sur le dépôt, le budget et l'hébergement), à valider. Date : 2026-10-16.
+Statut : étape 1, version 3 (intègre les réponses sur le dépôt, le budget et l'hébergement, ainsi que les contraintes Supabase et Vercel), à valider. Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -48,6 +48,8 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 
 - **Temps** : 5 à 7 h pour toute la chaîne (étapes 1 à 7), tranche 1 comprise.
 - **Comptes** : GitHub (dépôt public), Supabase, et Vercel ou Streamlit pour l'hébergement (choix en étape 3). Aucun autre compte ni service payant en tranche 1.
+  - **Supabase** : le compte n'a plus d'emplacement gratuit, puisque 2 projets actifs sont déjà en service et que la limite gratuite est de 2 projets actifs, tous comptes et organisations confondus. Le développement et la CI se font donc sur Supabase en local. Il faut un projet hébergé seulement au premier déploiement (voir Q8).
+  - **Vercel** : l'import exige un dépôt GitHub non vide. Le premier push se fera avec un squelette déployable, en première tâche de l'étape 6, et seulement sur ton accord.
 - **Stack** : libre, choisie en étape 3.
 - **Fournisseurs LLM** : OpenAI et Anthropic, avec la clé API de l'utilisateur.
 - **Qualité du code**, contrôlée en CI :
@@ -72,6 +74,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 | Appels vers des adresses arbitraires | Adresses des fournisseurs fixées côté serveur ; aucune adresse fournie par l'utilisateur |
 | Fuite de clé | Chiffrement au repos avec une clé maîtresse gardée en secret serveur ; jamais en clair en base, dans les journaux ou dans les réponses ; RLS testée |
 | Coût pour l'utilisateur, qui paie avec sa clé | Plafond de tokens par appel, limite d'essais par minute, modèle choisi explicitement |
+| Aucun projet Supabase hébergé disponible au moment du déploiement | Développement et CI sur Supabase en local ; décision Q8 prise avant la tâche de déploiement |
 | Quotas des offres gratuites (Supabase, GitHub, hébergeur) | À vérifier en étape 3 ; suivi en T2 grâce à l'observabilité |
 | Dépôt public : les tests des katas sont lisibles par tous | Acceptable en T1, puisque tricher ne nuit qu'à soi-même. En T2, les tests réellement cachés devront vivre hors du dépôt public |
 | Dépôt public : un secret commité par erreur est exposé immédiatement | Détection de secrets en CI et dans un hook avant commit (étape 5) ; rotation immédiate en cas de fuite |
@@ -163,3 +166,9 @@ La CI n'est jamais coupée.
 - **Q7. Licence du dépôt public**
   - Sans licence, le code reste « tous droits réservés » : il est lisible, mais ni réutilisable ni ouvert aux contributions.
   - Hypothèse : MIT, à confirmer en étape 5.
+- **Q8. Projet Supabase hébergé**
+  - Options :
+    - A. Mettre en pause un des deux projets existants. Un projet en pause ne compte pas dans la limite, et ses données sont conservées jusqu'à sa restauration manuelle.
+    - B. Passer une organisation en offre payante.
+    - C. Réutiliser un projet existant. Je le déconseille : données et utilisateurs mélangés avec un autre projet.
+  - Hypothèse : A, à décider avant la tâche de déploiement de l'étape 6.
