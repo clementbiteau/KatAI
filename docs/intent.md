@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 3 (intègre les réponses sur le dépôt, le budget et l'hébergement, ainsi que les contraintes Supabase et Vercel), à valider. Date : 2026-10-16.
+Statut : étape 1, version 4 (Firebase remplace Supabase ; aucun plafond de temps), à valider. Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -36,27 +36,32 @@ Offrir un dojo où l'on s'entraîne à écrire des spécifications qu'un modèle
 |---|---|---|
 | R1 | 3 katas jouables de bout en bout sur la version déployée | Parcours manuel consigné dans `docs/retro.md` |
 | R2 | 2 essais d'un même kata comparés côte à côte : spécification, code, tests réussis sur total, modèle, durée, tokens | Test automatique de la comparaison et parcours manuel |
-| R3 | Une fois saisie, la clé n'est plus jamais renvoyée : aucune réponse d'API, aucune page et aucun journal ne la contient | Tests automatiques : la RLS refuse la lecture directe de la table, et la fonction serveur ne renvoie qu'un indicateur « configurée » |
-| R4 | Un utilisateur ne lit ni ne modifie les essais ou les clés d'un autre ; un visiteur anonyme ne lit que les katas | Tests RLS automatiques en CI |
-| R5 | La CI est verte sur `main` (tests, contrôle de structure, tests RLS), et un dépassement de limite fait échouer le build | CI, plus un test du script de contrôle sur un cas en échec |
-| R6 | Le déploiement depuis `main` est automatique (front, migrations, fonctions serveur) | Exécution réussie du pipeline de déploiement |
-| R7 | La chaîne complète (étapes 1 à 7), tranche 1 comprise, tient en 7 h maximum | Temps relevé dans `docs/retro.md` |
+| R3 | Une fois saisie, la clé n'est plus jamais renvoyée : aucune réponse d'API, aucune page et aucun journal ne la contient | Tests automatiques : les règles de sécurité refusent toute lecture client de la collection des clés, et la route serveur ne renvoie qu'un indicateur « configurée » |
+| R4 | Un utilisateur ne lit ni ne modifie les essais ou les clés d'un autre ; un visiteur anonyme ne lit que les katas | Tests des règles de sécurité sur l'émulateur Firebase, automatiques en CI |
+| R5 | La CI est verte sur `main` (tests, contrôle de structure, tests des règles), et un dépassement de limite fait échouer le build | CI, plus un test du script de contrôle sur un cas en échec |
+| R6 | Le déploiement depuis `main` est automatique (front, routes serveur, règles et index Firestore) | Exécution réussie du pipeline de déploiement |
+| R7 | Le temps passé est relevé par étape, sans plafond | Tableau des temps dans `docs/retro.md`, tiré de l'historique git |
 
 La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur tout ce qui suit cette saisie.
 
 ## 6. Contraintes
 
-- **Temps** : 5 à 7 h pour toute la chaîne (étapes 1 à 7), tranche 1 comprise.
-- **Comptes** : GitHub (dépôt public), Supabase, et Vercel ou Streamlit pour l'hébergement (choix en étape 3). Aucun autre compte ni service payant en tranche 1.
-  - **Supabase** : le compte n'a plus d'emplacement gratuit, puisque 2 projets actifs sont déjà en service et que la limite gratuite est de 2 projets actifs, tous comptes et organisations confondus. Le développement et la CI se font donc sur Supabase en local. Il faut un projet hébergé seulement au premier déploiement (voir Q8).
+- **Temps** : aucun plafond. Le porteur du projet décide quand s'arrêter. La tranche 1 vise ce week-end et reste fine.
+- **Comptes** : GitHub (dépôt public), Firebase (offre gratuite), et Vercel ou Streamlit pour l'hébergement (choix en étape 3). Aucun service payant en tranche 1.
+  - **Firebase** remplace Supabase, car l'offre gratuite de Supabase n'a plus d'emplacement disponible. On utilise Firebase Authentication, Cloud Firestore et les règles de sécurité Firestore. Les règles s'appliquent par document, l'équivalent des règles par ligne.
+  - **Logique serveur** : elle tourne dans les routes serveur de l'hébergeur, avec le SDK Admin de Firebase, et non dans Cloud Functions. Hypothèse à vérifier en étape 3 : Cloud Functions exige l'offre payante.
   - **Vercel** : l'import exige un dépôt GitHub non vide. Le premier push se fera avec un squelette déployable, en première tâche de l'étape 6, et seulement sur ton accord.
+- **Prérequis locaux** :
+  - l'émulateur Firebase a besoin de Java, absent sur la machine (version minimale à vérifier) ;
+  - son installation est proposée en étape 5, sur ton accord ;
+  - la CLI Firebase 15.9.1, Node 26 et Docker sont présents.
 - **Stack** : libre, choisie en étape 3.
 - **Fournisseurs LLM** : OpenAI et Anthropic, avec la clé API de l'utilisateur.
 - **Qualité du code**, contrôlée en CI :
   - au plus 5 fonctions par fichier, 5 fichiers par dossier et 3 niveaux de sous-dossiers ;
   - une fonction, c'est toute définition de fonction dans le code (voir Q5 pour les fonctions anonymes) ;
-  - exception : `supabase/migrations/` n'est pas soumis à la limite de 5 fichiers. En contrepartie, chaque migration porte un en-tête documenté : objet, tables touchées, effet sur la RLS, retour arrière ;
-  - toute autre exception imposée par un framework sera proposée en étape 3 et validée avant application.
+  - pas de migrations SQL avec Firestore. En contrepartie, chaque changement du modèle de données ou des règles de sécurité est documenté dans le dépôt : objet, collections touchées, effet sur les règles, retour arrière ;
+  - toute exception imposée par un framework sera proposée en étape 3 et validée avant application.
 - **Sécurité** :
   - aucun secret dans le dépôt ;
   - les clés utilisateurs sont chiffrées et ne quittent jamais le serveur ;
@@ -72,16 +77,16 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 |---|---|
 | Injection de prompt : l'énoncé ou la spécification pousse le modèle à produire du code malveillant (lecture de la session, appels réseau). Le risque grandit en T3 avec les assets partagés par des tiers | Exécution isolée, sans accès à la session ni au stockage, avec un délai maximal ; aucun secret côté client |
 | Appels vers des adresses arbitraires | Adresses des fournisseurs fixées côté serveur ; aucune adresse fournie par l'utilisateur |
-| Fuite de clé | Chiffrement au repos avec une clé maîtresse gardée en secret serveur ; jamais en clair en base, dans les journaux ou dans les réponses ; RLS testée |
+| Fuite de clé | Chiffrement au repos avec une clé maîtresse gardée en secret serveur ; jamais en clair en base, dans les journaux ou dans les réponses ; règles de sécurité testées |
+| Le SDK Admin contourne les règles de sécurité : une erreur côté serveur n'est rattrapée par aucune règle | Accès Admin cantonné à un seul module serveur, vérification explicite de l'identité à chaque route, tests dédiés |
 | Coût pour l'utilisateur, qui paie avec sa clé | Plafond de tokens par appel, limite d'essais par minute, modèle choisi explicitement |
-| Aucun projet Supabase hébergé disponible au moment du déploiement | Développement et CI sur Supabase en local ; décision Q8 prise avant la tâche de déploiement |
-| Quotas des offres gratuites (Supabase, GitHub, hébergeur) | À vérifier en étape 3 ; suivi en T2 grâce à l'observabilité |
+| Quotas des offres gratuites (Firebase, GitHub, hébergeur) | À vérifier en étape 3 ; suivi en T2 grâce à l'observabilité |
 | Dépôt public : les tests des katas sont lisibles par tous | Acceptable en T1, puisque tricher ne nuit qu'à soi-même. En T2, les tests réellement cachés devront vivre hors du dépôt public |
 | Dépôt public : un secret commité par erreur est exposé immédiatement | Détection de secrets en CI et dans un hook avant commit (étape 5) ; rotation immédiate en cas de fuite |
 | Code généré qui boucle ou sature le navigateur | Délai maximal et arrêt forcé de l'exécution |
 | Score falsifiable, puisque les tests tournent dans le navigateur | Acceptable tant qu'il n'y a ni classement, ni succès, ni publication ; bac à sable serveur prévu en T2 |
-| Durée maximale d'une fonction serveur (Supabase ou hébergeur) plus courte que la réponse d'un modèle | Limite à vérifier en étape 3 ; plafond de tokens |
-| Budget de 5 à 7 h dépassé, très probable puisqu'il couvre toute la chaîne | Comparaison simplifiée dès le départ, ligne de coupe (section 9), documents des étapes 2 à 5 courts, signalement de tout glissement dès qu'il apparaît |
+| Durée maximale d'une route serveur de l'hébergeur plus courte que la réponse d'un modèle | Limite à vérifier en étape 3 ; plafond de tokens |
+| Tranche 1 qui grossit au-delà du week-end | Tranche fine, ligne de coupe (section 9), signalement de tout glissement dès qu'il apparaît |
 | Limites de structure incompatibles avec un framework | Exceptions explicites proposées en étape 3, jamais de contournement silencieux |
 
 ## 8. Priorisation MoSCoW
@@ -89,16 +94,16 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 | # | Élément | MoSCoW | Justification | Tranche |
 |---|---|---|---|---|
 | 1 | Authentification | Must | Sans identité, pas de clé personnelle ni d'essais à soi | T1 |
-| 2 | Supabase + RLS testées | Must | Toutes les données sont personnelles ; une RLS non testée est la première source de fuite | T1 |
+| 2 | Base de données (Firebase, à la place de Supabase) et règles de sécurité testées | Must | Toutes les données sont personnelles ; des règles non testées sont la première source de fuite | T1 |
 | 3 | LLM apporté par l'utilisateur | Must | C'est le cœur du kata. Liste fermée OpenAI et Anthropic, appel en une passe | T1 |
 | 4 | Bac à sable | Must | Sans exécution, pas de score objectif (option A). Version 1 dans le navigateur, version 2 côté serveur | T1, puis T2 |
 | 8 | Enregistrement et comparaison des essais | Must | C'est un critère de réussite et ce qui rend le progrès visible | T1 |
 | 11 | README soigné | Must | Le produit est fait pour être utilisé et repris. Version minimale en T1 (installer, lancer, sécurité), version soignée en T2 | T1, puis T2 |
 | 6 | Observabilité | Should | Indispensable dès qu'il y a plusieurs utilisateurs et des coûts. Durée, tokens et erreur sont stockés avec chaque essai dès T1, car ils servent la comparaison ; le tableau de bord vient en T2 | T2 |
 | 7 | Compte démo | Should | Permet d'essayer sans clé. Sans clé plateforme, la démo rejoue des essais enregistrés | T2 |
-| 10 | Publication et partage d'assets | Should | Crée l'effet communauté, mais introduit du contenu tiers (injection de prompt), de la modération et des règles RLS publiques | T3 |
+| 10 | Publication et partage d'assets | Should | Crée l'effet communauté, mais introduit du contenu tiers (injection de prompt), de la modération et des règles de lecture publique | T3 |
 | 9 | Succès | Could | Motivant, mais suppose un score fiable, donc le bac à sable serveur | T3 |
-| 5 | Équipes | Could | Utile pour les équipes, mais complique fortement le modèle de sécurité (RLS par équipe) ; inutile tant que l'usage reste individuel | T3 |
+| 5 | Équipes | Could | Utile pour les équipes, mais complique fortement le modèle de sécurité (règles par équipe) ; inutile tant que l'usage reste individuel | T3 |
 
 **Won't**, pour ces trois tranches :
 - Connexion par abonnement (compte ChatGPT ou Claude.ai) au lieu d'une clé API. Il faudrait gérer des jetons OAuth, et les conditions des fournisseurs encadrent cet usage par des applications tierces (à vérifier en étape 3).
@@ -107,18 +112,18 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 
 ## 9. Tranches
 
-### Tranche 1 : boucle jouable (ce week-end, 5 à 7 h)
+### Tranche 1 : boucle jouable (ce week-end)
 
-- Authentification Supabase (méthode choisie en étape 3).
-- Schéma minimal (katas, clés, essais), RLS et tests RLS.
-- Clés OpenAI et Anthropic chiffrées ; appel en une passe depuis une fonction serveur.
+- Authentification Firebase (méthode choisie en étape 3).
+- Modèle de données minimal (katas, clés, essais), règles de sécurité et leurs tests sur l'émulateur.
+- Clés OpenAI et Anthropic chiffrées ; appel en une passe depuis une route serveur.
 - 3 katas originaux en JavaScript/TypeScript, exécutés dans le navigateur de façon isolée, avec un délai maximal.
 - Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur).
-- Comparaison de deux essais en deux colonnes. Réduction de périmètre proposée dès le départ, à cause du budget : la mise en évidence des différences passe en T2.
-- CI (tests, contrôle de structure, RLS) et déploiement automatique.
+- Comparaison de deux essais en deux colonnes. La mise en évidence des différences passe en T2, pour garder la tranche fine.
+- CI (tests, contrôle de structure, règles de sécurité) et déploiement automatique.
 - README minimal.
 
-**Ligne de coupe**, appliquée dans cet ordre en cas de glissement :
+**Ligne de coupe**, appliquée dans cet ordre si la tranche déborde du week-end :
 1. Un seul fournisseur ; le second arrive en ouverture de T2.
 2. Déploiement manuel documenté à la place du déploiement automatique.
 
@@ -146,7 +151,8 @@ La CI n'est jamais coupée.
 ### Réponses reçues
 
 - **Q2. Dépôt** : public pour commencer.
-- **Q6. Budget** : les 5 à 7 h couvrent toute la chaîne, étapes 1 à 7.
+- **Q6. Temps** : aucun plafond ; le porteur du projet décide quand s'arrêter.
+- **Q8. Base de données** : Firebase à la place de Supabase.
 - **Hébergement** : Vercel ou Streamlit sont disponibles. Le choix se fait en étape 3.
 
 ### Questions restantes (hypothèses appliquées sauf correction)
@@ -166,9 +172,3 @@ La CI n'est jamais coupée.
 - **Q7. Licence du dépôt public**
   - Sans licence, le code reste « tous droits réservés » : il est lisible, mais ni réutilisable ni ouvert aux contributions.
   - Hypothèse : MIT, à confirmer en étape 5.
-- **Q8. Projet Supabase hébergé**
-  - Options :
-    - A. Mettre en pause un des deux projets existants. Un projet en pause ne compte pas dans la limite, et ses données sont conservées jusqu'à sa restauration manuelle.
-    - B. Passer une organisation en offre payante.
-    - C. Réutiliser un projet existant. Je le déconseille : données et utilisateurs mélangés avec un autre projet.
-  - Hypothèse : A, à décider avant la tâche de déploiement de l'étape 6.
