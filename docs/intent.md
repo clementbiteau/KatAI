@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, à valider. Date : 2026-10-16.
+Statut : étape 1, version 2 (intègre les réponses sur le dépôt, le budget et l'hébergement), à valider. Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -40,14 +40,14 @@ Offrir un dojo où l'on s'entraîne à écrire des spécifications qu'un modèle
 | R4 | Un utilisateur ne lit ni ne modifie les essais ou les clés d'un autre ; un visiteur anonyme ne lit que les katas | Tests RLS automatiques en CI |
 | R5 | La CI est verte sur `main` (tests, contrôle de structure, tests RLS), et un dépassement de limite fait échouer le build | CI, plus un test du script de contrôle sur un cas en échec |
 | R6 | Le déploiement depuis `main` est automatique (front, migrations, fonctions serveur) | Exécution réussie du pipeline de déploiement |
-| R7 | La tranche 1 tient en 7 h de travail maximum | Temps relevé dans `docs/retro.md` |
+| R7 | La chaîne complète (étapes 1 à 7), tranche 1 comprise, tient en 7 h maximum | Temps relevé dans `docs/retro.md` |
 
 La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur tout ce qui suit cette saisie.
 
 ## 6. Contraintes
 
-- **Temps** : 5 à 7 h pour la tranche 1. Hypothèse : ce budget couvre toute la chaîne, étapes 1 à 7 (voir Q6).
-- **Comptes** : GitHub et Supabase personnels uniquement. Aucun autre compte ni service payant en tranche 1.
+- **Temps** : 5 à 7 h pour toute la chaîne (étapes 1 à 7), tranche 1 comprise.
+- **Comptes** : GitHub (dépôt public), Supabase, et Vercel ou Streamlit pour l'hébergement (choix en étape 3). Aucun autre compte ni service payant en tranche 1.
 - **Stack** : libre, choisie en étape 3.
 - **Fournisseurs LLM** : OpenAI et Anthropic, avec la clé API de l'utilisateur.
 - **Qualité du code**, contrôlée en CI :
@@ -72,11 +72,13 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 | Appels vers des adresses arbitraires | Adresses des fournisseurs fixées côté serveur ; aucune adresse fournie par l'utilisateur |
 | Fuite de clé | Chiffrement au repos avec une clé maîtresse gardée en secret serveur ; jamais en clair en base, dans les journaux ou dans les réponses ; RLS testée |
 | Coût pour l'utilisateur, qui paie avec sa clé | Plafond de tokens par appel, limite d'essais par minute, modèle choisi explicitement |
-| Quotas des offres gratuites Supabase et GitHub | À vérifier en étape 3 ; suivi en T2 grâce à l'observabilité |
+| Quotas des offres gratuites (Supabase, GitHub, hébergeur) | À vérifier en étape 3 ; suivi en T2 grâce à l'observabilité |
+| Dépôt public : les tests des katas sont lisibles par tous | Acceptable en T1, puisque tricher ne nuit qu'à soi-même. En T2, les tests réellement cachés devront vivre hors du dépôt public |
+| Dépôt public : un secret commité par erreur est exposé immédiatement | Détection de secrets en CI et dans un hook avant commit (étape 5) ; rotation immédiate en cas de fuite |
 | Code généré qui boucle ou sature le navigateur | Délai maximal et arrêt forcé de l'exécution |
 | Score falsifiable, puisque les tests tournent dans le navigateur | Acceptable tant qu'il n'y a ni classement, ni succès, ni publication ; bac à sable serveur prévu en T2 |
-| Durée maximale d'une fonction serveur plus courte que la réponse d'un modèle | Limite à vérifier en étape 3 ; plafond de tokens |
-| Budget de 5 à 7 h dépassé | Ligne de coupe (section 9), et signalement de tout glissement dès qu'il apparaît |
+| Durée maximale d'une fonction serveur (Supabase ou hébergeur) plus courte que la réponse d'un modèle | Limite à vérifier en étape 3 ; plafond de tokens |
+| Budget de 5 à 7 h dépassé, très probable puisqu'il couvre toute la chaîne | Comparaison simplifiée dès le départ, ligne de coupe (section 9), documents des étapes 2 à 5 courts, signalement de tout glissement dès qu'il apparaît |
 | Limites de structure incompatibles avec un framework | Exceptions explicites proposées en étape 3, jamais de contournement silencieux |
 
 ## 8. Priorisation MoSCoW
@@ -108,14 +110,14 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 - Schéma minimal (katas, clés, essais), RLS et tests RLS.
 - Clés OpenAI et Anthropic chiffrées ; appel en une passe depuis une fonction serveur.
 - 3 katas originaux en JavaScript/TypeScript, exécutés dans le navigateur de façon isolée, avec un délai maximal.
-- Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur) et comparaison de deux essais.
+- Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur).
+- Comparaison de deux essais en deux colonnes. Réduction de périmètre proposée dès le départ, à cause du budget : la mise en évidence des différences passe en T2.
 - CI (tests, contrôle de structure, RLS) et déploiement automatique.
 - README minimal.
 
 **Ligne de coupe**, appliquée dans cet ordre en cas de glissement :
-1. Comparaison réduite à deux colonnes, sans mise en évidence des différences.
-2. Un seul fournisseur ; le second arrive en ouverture de T2.
-3. Déploiement manuel documenté à la place du déploiement automatique.
+1. Un seul fournisseur ; le second arrive en ouverture de T2.
+2. Déploiement manuel documenté à la place du déploiement automatique.
 
 La CI n'est jamais coupée.
 
@@ -124,6 +126,7 @@ La CI n'est jamais coupée.
 - Bac à sable serveur : score non falsifiable et tests réellement cachés. Il demandera probablement un service supplémentaire, à décider.
 - Observabilité : consommation, latence et erreurs par utilisateur et par fournisseur.
 - Compte démo avec essais prêts.
+- Mise en évidence des différences entre deux essais.
 - Quotas par utilisateur.
 - README soigné, guide d'ajout de kata, nouveaux katas.
 - Revue IA des pull requests en CI, si Q3 est confirmée.
@@ -135,13 +138,19 @@ La CI n'est jamais coupée.
 - Équipes.
 - Mode agent multi-tours, si Q1 est confirmée.
 
-## 10. Questions ouvertes
+## 10. Questions
+
+### Réponses reçues
+
+- **Q2. Dépôt** : public pour commencer.
+- **Q6. Budget** : les 5 à 7 h couvrent toute la chaîne, étapes 1 à 7.
+- **Hébergement** : Vercel ou Streamlit sont disponibles. Le choix se fait en étape 3.
+
+### Questions restantes (hypothèses appliquées sauf correction)
 
 - **Q1. « Connecter OpenAI Codex et Claude Code »**
   - Hypothèse retenue : l'utilisateur fournit une clé API OpenAI ou Anthropic, et le serveur appelle le modèle en une passe, sans boucle d'agent.
   - Faire tourner les agents eux-mêmes (boucle multi-tours avec outils, fichiers et retour des tests) demande un bac à sable serveur, d'où la proposition en T3.
-- **Q2. Dépôt public ou privé ?**
-  - La réponse conditionne l'hébergement du front (disponibilité de GitHub Pages sur un dépôt privé selon l'offre, à vérifier) et la visibilité du README.
 - **Q3. « CI/CD agentique »**
   - Hypothèse : le pipeline est construit et opéré par l'agent, et le déploiement part automatiquement de `main` après ton accord de fusion.
   - Une revue IA des pull requests demanderait une clé API en secret GitHub, d'où la proposition en T2.
@@ -151,5 +160,6 @@ La CI n'est jamais coupée.
 - **Q5. Fonctions anonymes passées en argument** (callbacks de test, `map`, gestionnaires d'événements)
   - Si elles comptent, un fichier de test est limité à 4 cas plus le `describe`, ce qui force un découpage artificiel.
   - Proposition : toute fonction nommée ou assignée à une variable ou à une propriété compte ; une fonction anonyme passée directement en argument ne compte pas.
-- **Q6. Budget de 5 à 7 h**
-  - Couvre-t-il toute la chaîne (étapes 1 à 7) ou seulement la construction ?
+- **Q7. Licence du dépôt public**
+  - Sans licence, le code reste « tous droits réservés » : il est lisible, mais ni réutilisable ni ouvert aux contributions.
+  - Hypothèse : MIT, à confirmer en étape 5.
