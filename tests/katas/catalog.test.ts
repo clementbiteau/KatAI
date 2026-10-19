@@ -2,18 +2,18 @@ import { describe, expect, it } from "vitest";
 import { findKata, KATAS, randoriMinutes } from "../../katas/catalog.ts";
 
 describe("kata catalog", () => {
-  it("contains the three starter katas, one per level", () => {
-    expect(KATAS.map((kata) => [kata.id, kata.level])).toEqual([
-      ["cart-total", "easy"],
-      ["slugify", "medium"],
-      ["free-slots", "hard"],
+  it("contains three specification katas: retail, luxury and banking, one per level", () => {
+    expect(KATAS.map((kata) => [kata.id, kata.sector, kata.level, kata.stage])).toEqual([
+      ["retail-cart", "retail", "easy", "specification"],
+      ["luxury-engraving", "luxury", "medium", "specification"],
+      ["banking-transfer-guard", "banking", "hard", "specification"],
     ]);
   });
 
   it.each(KATAS)("$id is complete and consistent", (kata) => {
-    expect(kata.title.length).toBeGreaterThan(0);
-    expect(kata.summary.length).toBeGreaterThan(0);
-    expect(kata.statement.length).toBeGreaterThan(0);
+    for (const text of [kata.title, kata.summary, kata.practice, kata.brief]) {
+      expect(text.trim().length).toBeGreaterThan(0);
+    }
     expect(kata.functionName).toMatch(/^[a-z][A-Za-z0-9]*$/);
     expect(kata.signature.startsWith(`${kata.functionName}(`)).toBe(true);
     expect(kata.tests.length).toBeGreaterThanOrEqual(8);
@@ -28,7 +28,7 @@ describe("kata catalog", () => {
   });
 
   it("finds a kata by id and returns undefined for an unknown id", () => {
-    expect(findKata("slugify")?.title).toBe("Slugify");
+    expect(findKata("luxury-engraving")?.title).toBe("Engraving request");
     expect(findKata("does-not-exist")).toBeUndefined();
   });
 

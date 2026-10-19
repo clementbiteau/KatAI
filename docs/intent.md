@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 4, validée le 2026-10-16 ; amendée le 2026-10-19 (ajout du mode Randori, élément 12). Date : 2026-10-16.
+Statut : étape 1, version 4, validée le 2026-10-16 ; amendée le 2026-10-19 (ajout du mode Randori, élément 12 ; recadrage des katas par étape du cycle de développement, élément 13). Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -105,7 +105,23 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 | 10 | Publication et partage d'assets | Should | Crée l'effet communauté, mais introduit du contenu tiers (injection de prompt), de la modération et des règles de lecture publique | T3 |
 | 9 | Succès | Could | Motivant, mais suppose un score fiable, donc le bac à sable serveur | T3 |
 | 12 | Randori : kata contre la montre | Should | Entraîne à spécifier vite et juste. Le coût reste modéré, car il réutilise la boucle d'essai. Le chronomètre est tenu par le serveur | T1, en fin de construction |
+| 13 | Katas par étape du cycle de développement, à partir de briefs clients réalistes (section 8 bis) | Must pour les spec katas ; Should pour les guardrail et review katas ; Could pour les framing katas | Le dojo entraîne le cycle de développement avec agents, pas l'algorithmique. Des besoins crédibles de grands comptes et d'ETI favorisent l'adoption | T1, T2, T3 |
 | 5 | Équipes | Could | Utile pour les équipes, mais complique fortement le modèle de sécurité (règles par équipe) ; inutile tant que l'usage reste individuel | T3 |
+
+### 8 bis. Types de katas (amendement du 2026-10-19)
+
+Un kata part d'un brief client réaliste et entraîne une étape du cycle de développement avec agents. Les entreprises des briefs sont fictives et les secteurs génériques. Le dépôt ne nomme aucun client ni aucun cabinet réel (règle de neutralité).
+
+| Étape du cycle | Type de kata | Ce que l'utilisateur produit avec son agent | Notation | Tranche |
+|---|---|---|---|---|
+| Spécification | Spec kata | Une spécification, à partir d'un brief client | Le modèle code à partir de la spécification, puis les tests d'acceptation cachés jugent | T1 |
+| Garde-fous | Guardrail kata | La suite de tests d'une fonctionnalité | Les tests doivent valider l'implémentation correcte et attraper des versions volontairement boguées | T2 |
+| Revue | Review kata | La relecture d'un code produit par un agent, face à la spécification | Retrouver les écarts volontairement introduits | T2 |
+| Cadrage, conception, plan | Framing kata | Une intention, un ADR ou un plan, à partir d'un brief | Grille d'évaluation appliquée par un modèle juge, sur la clé de l'utilisateur | T3 |
+
+Le Randori enchaînera plusieurs étapes sur un même brief, contre la montre, dès que plusieurs types de katas existeront. En T1, il porte sur les spec katas.
+
+Secteurs des 3 premiers briefs : retail (facile), luxe (moyen), banque (difficile).
 
 **Won't**, pour ces trois tranches :
 - Connexion par abonnement (compte ChatGPT ou Claude.ai) au lieu d'une clé API. Il faudrait gérer des jetons OAuth, et les conditions des fournisseurs encadrent cet usage par des applications tierces (à vérifier en étape 3).
@@ -119,7 +135,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 - Authentification Firebase (méthode choisie en étape 3).
 - Modèle de données minimal (katas, clés, essais), règles de sécurité et leurs tests sur l'émulateur.
 - Clés OpenAI et Anthropic chiffrées ; appel en une passe depuis une route serveur.
-- 3 katas originaux en JavaScript/TypeScript, exécutés dans le navigateur de façon isolée, avec un délai maximal.
+- 3 spec katas originaux (retail, luxe, banque), rédigés comme des briefs clients, résolus en JavaScript et exécutés dans le navigateur de façon isolée, avec un délai maximal. Chaque kata affiche son étape du cycle et la compétence qu'il entraîne.
 - Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur).
 - Comparaison de deux essais en deux colonnes. La mise en évidence des différences passe en T2, pour garder la tranche fine.
 - Deux sections : Kata (entraînement libre) et Randori (contre la montre, chronomètre tenu par le serveur).
@@ -142,6 +158,7 @@ La CI n'est jamais coupée.
 - Quotas par utilisateur.
 - README soigné, guide d'ajout de kata, nouveaux katas.
 - Revue IA des pull requests en CI, si Q3 est confirmée.
+- Guardrail katas et review katas (section 8 bis), qui réutilisent le bac à sable.
 
 ### Tranche 3 : communauté
 
@@ -149,6 +166,8 @@ La CI n'est jamais coupée.
 - Succès.
 - Équipes.
 - Mode agent multi-tours, si Q1 est confirmée.
+- Framing katas (cadrage, conception, plan) notés par un modèle juge (section 8 bis).
+- Randori enchaînant plusieurs étapes du cycle sur un même brief.
 
 ## 10. Questions
 
