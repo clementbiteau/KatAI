@@ -1,0 +1,25 @@
+// KatAI Firestore security rules. Model: clients read, the server writes
+// (docs/adr/0003-modele-de-securite.md). Any path not matched below is denied.
+//
+// Change log (docs/adr/0002-authentification-et-donnees.md requires one entry per change):
+// - 2026-10-19: initial rules.
+//   Collections: attempts, randoris (owner read only); providerKeys, usage (no client access).
+//   Effect: no client write anywhere; reads limited to the owner's documents.
+//   Rollback: redeploy the previous version of this file.
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner() {
+      return request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    match /attempts/{attemptId} {
+      allow get, list: if isOwner();
+    }
+
+    match /randoris/{randoriId} {
+      allow get, list: if isOwner();
+    }
+  }
+}
