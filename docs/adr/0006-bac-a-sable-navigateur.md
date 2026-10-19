@@ -1,6 +1,6 @@
 # ADR 0006 : bac à sable d'exécution dans le navigateur
 
-Statut : proposé, 2026-10-19.
+Statut : accepté le 2026-10-19.
 
 ## Contexte
 

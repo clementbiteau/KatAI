@@ -1,6 +1,6 @@
 # ADR 0003 : modèle de sécurité
 
-Statut : proposé, 2026-10-19.
+Statut : accepté le 2026-10-19.
 
 ## Contexte
 

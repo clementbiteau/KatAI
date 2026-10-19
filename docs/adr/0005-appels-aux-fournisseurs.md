@@ -1,6 +1,6 @@
 # ADR 0005 : appels aux fournisseurs de modèles
 
-Statut : proposé, 2026-10-19.
+Statut : accepté le 2026-10-19.
 
 ## Contexte
 
@@ -49,16 +49,18 @@ A : les SDK officiels, un adaptateur par fournisseur, derrière une même interf
 
 Sur `claude-opus-5-5`, la réflexion ne peut pas être désactivée, et ses tokens comptent dans `max_tokens`. Le plafond de 4 096 validé dans la spec risque donc de tronquer souvent les réponses.
 
-**Proposition à valider** :
-- porter le plafond à 16 000, la valeur par défaut recommandée pour un appel sans streaming ;
-- fixer explicitement `output_config.effort: "low"` pour contenir le coût, ce qui suffit à générer une petite fonction.
+**Décision validée le 2026-10-19** :
+- le plafond passe à 16 000 pour tous les fournisseurs, la valeur par défaut recommandée pour un appel sans streaming ;
+- `output_config.effort: "low"` est fixé explicitement pour contenir le coût, ce qui suffit à générer une petite fonction.
+
+La spec est amendée en conséquence.
 
 ## Refus du modèle
 
 - `stop_reason: "refusal"` donne la catégorie « refus du modèle ».
-- La référence Anthropic recommande d'activer par défaut le repli côté serveur sur les modèles Opus et Sonnet 5.5 : en-tête bêta `server-side-fallback-2026-07-01` et `fallbacks: "default"`. Je l'active, et `servedModel` enregistre le modèle qui a réellement répondu, pour que la comparaison reste honnête. À désactiver si tu préfères.
+- La référence Anthropic recommande d'activer par défaut le repli côté serveur sur les modèles Opus et Sonnet 5.5 : en-tête bêta `server-side-fallback-2026-07-01` et `fallbacks: "default"`. Le repli est activé (validé le 2026-10-19), et `servedModel` enregistre le modèle qui a réellement répondu, pour que la comparaison reste honnête.
 
-## Correspondance des erreurs (complète CA4.5 et CA4.6)
+## Correspondance des erreurs (complète CA4.5 et CA4.6, validée le 2026-10-19)
 
 | Cas | Catégorie |
 |---|---|

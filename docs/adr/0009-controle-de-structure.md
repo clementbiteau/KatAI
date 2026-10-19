@@ -1,6 +1,6 @@
 # ADR 0009 : contrôle automatique des limites de structure
 
-Statut : proposé, 2026-10-19. Décisions de portée prises le 2026-10-19.
+Statut : accepté le 2026-10-19. Décisions de portée prises le 2026-10-19.
 
 ## Contexte
 

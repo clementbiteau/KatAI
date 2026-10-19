@@ -1,6 +1,6 @@
 # KatAI : spécification de la tranche 1
 
-Statut : étape 2, version 2, validée le 2026-10-19. Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
+Statut : étape 2, version 2, validée le 2026-10-19 ; amendée le 2026-10-19 (plafond de tokens, catégories d'erreur, ADR 0005). Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
 
 ## 1. Périmètre
 
@@ -54,7 +54,7 @@ Dans les deux sections, l'utilisateur n'écrit jamais de code. Il écrit une sp�
 | Paramètre | Valeur |
 |---|---|
 | Longueur maximale d'une spécification | 4 000 caractères |
-| Plafond de tokens en sortie par appel | 4 096 |
+| Plafond de tokens en sortie par appel | 16 000, avec un effort de réflexion `low` (amendé le 2026-10-19, ADR 0005 : la réflexion compte dans le plafond) |
 | Essais par utilisateur | 5 par minute au plus |
 | Délai maximal d'un appel au fournisseur | 60 s (à confronter en étape 3 à la limite de l'hébergeur) |
 | Délai maximal d'exécution des tests | 5 s par essai |
@@ -126,7 +126,7 @@ En tant qu'utilisateur connecté, je veux écrire une spécification, la faire t
 - **CA4.3** Étant donné aucune clé pour le fournisseur choisi, quand l'utilisateur veut soumettre, alors un message avec un lien vers les réglages remplace le bouton, et aucun appel ne part.
 - **CA4.4** Étant donné une spécification vide, alors le bouton est désactivé. Étant donné une spécification de plus de 4 000 caractères, alors le compteur le signale, et la soumission est refusée côté client comme côté serveur (400).
 - **CA4.5** Étant donné une clé refusée par le fournisseur, quand l'essai est soumis, alors un message indique que le fournisseur a refusé la clé. L'essai est enregistré avec le statut « erreur » et la catégorie « clé refusée », sans code ni score.
-- **CA4.6** Étant donné une limite atteinte chez le fournisseur, une indisponibilité de sa part ou un appel qui dépasse 60 s, quand l'essai est soumis, alors un message adapté s'affiche. L'essai est enregistré en « erreur » avec la catégorie correspondante, et il n'y a pas de nouvelle tentative automatique.
+- **CA4.6** Étant donné une limite atteinte chez le fournisseur, une indisponibilité de sa part ou un appel qui dépasse 60 s, quand l'essai est soumis, alors un message adapté s'affiche. L'essai est enregistré en « erreur » avec la catégorie correspondante, et il n'y a pas de nouvelle tentative automatique. La liste complète des catégories est dans l'ADR 0005 ; elle ajoute notamment le crédit insuffisant, le modèle indisponible et le refus du modèle (amendé le 2026-10-19).
 - **CA4.7** Étant donné une réponse du modèle sans bloc de code exploitable, alors l'essai est « terminé » avec un code vide, un score de 0 / total et la mention « aucun code trouvé ».
 - **CA4.8** Étant donné un code qui ne se charge pas (erreur de syntaxe, fonction attendue absente), alors tous les tests sont « échoué », l'erreur de chargement s'affiche, et le score vaut 0 / total.
 - **CA4.9** Étant donné un code qui boucle sans fin, alors l'exécution s'arrête au bout de 5 s, les tests non terminés passent en « délai dépassé », et la page reste réactive.

@@ -1,6 +1,6 @@
 # ADR 0002 : authentification et modèle de données
 
-Statut : proposé, 2026-10-19.
+Statut : accepté le 2026-10-19.
 
 ## Contexte
 

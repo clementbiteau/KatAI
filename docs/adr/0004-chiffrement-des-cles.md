@@ -1,6 +1,6 @@
 # ADR 0004 : chiffrement des clés utilisateurs
 
-Statut : proposé, 2026-10-19.
+Statut : accepté le 2026-10-19.
 
 ## Contexte
 
