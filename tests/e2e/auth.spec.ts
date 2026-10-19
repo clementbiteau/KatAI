@@ -1,24 +1,8 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
+import { signOut, signUp, uniqueEmail } from "./helpers.ts";
 
 // Full sign-up, sign-in, sign-out and reset flows on a production build wired to
 // the Firebase Auth emulator. Each test uses its own email, so tests can run in parallel.
-
-function uniqueEmail(browser: string): string {
-  return `ada-${browser}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
-}
-
-async function signOut(page: Page) {
-  await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
-}
-
-async function signUp(page: Page, email: string, password: string) {
-  await page.goto("/signup");
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
-  await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page.getByRole("navigation", { name: "Account" })).toContainText(email);
-}
 
 test("a visitor creates an account, is signed in, then signs out (CA1.1, CA1.6)", async ({ page }, testInfo) => {
   const email = uniqueEmail(testInfo.project.name);
@@ -37,7 +21,8 @@ test("a protected page sends a visitor to sign in, then back to it (CA1.3, CA1.7
   await page.getByLabel("Password").fill("correct-horse");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL("/settings");
-  await expect(page.getByText("Your model provider keys will be managed here.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Settings" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Provider keys" })).toBeVisible();
 });
 
 test("a wrong password gets a generic message (CA1.4)", async ({ page }, testInfo) => {

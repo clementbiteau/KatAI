@@ -119,3 +119,21 @@ button {
 .results-list [data-status="timeout"] {
   color: var(--color-failed);
 }
+
+.provider-key {
+  margin-top: 2rem;
+}
+
+.provider-key h2 {
+  margin: 0;
+}
+
+.provider-key-status {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.provider-key-actions {
+  display: flex;
+  gap: 0.75rem;
+}
