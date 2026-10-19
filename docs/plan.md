@@ -1,6 +1,6 @@
 # KatAI : plan de la tranche 1
 
-Statut : étape 4, à valider. Date : 2026-10-19.
+Statut : étape 4, validée le 2026-10-19. Date : 2026-10-19.
 
 Sources :
 - `docs/intent.md` v4 (validée, amendée) ;
@@ -80,7 +80,7 @@ La CI n'est jamais coupée.
 ## Estimation et horizon
 
 - Total estimé : environ 20 h de travail, réparties en 24 tâches (4 h 25 de garde-fous, 15 h 45 de construction).
-- La tranche 1 visait le week-end du 17 et 18 octobre, déjà passé, et tu as levé le plafond de temps. L'horizon est donc à redéfinir si tu en veux un.
+- Décision du 2026-10-19 : aucun plafond ni horizon de temps, la qualité prime. Une estimation dépassée n'est jamais une raison de couper la qualité. Elle est seulement signalée, et on découpe la tâche si besoin.
 - Les temps réels seront relevés par tâche, à partir des commits, pour `docs/retro.md` (R7).
 
 ## Ce dont j'ai besoin de toi, dans l'ordre

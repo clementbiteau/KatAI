@@ -47,7 +47,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 
 ## 6. Contraintes
 
-- **Temps** : aucun plafond. Le porteur du projet décide quand s'arrêter. La tranche 1 vise ce week-end et reste fine.
+- **Temps** : ni plafond ni horizon. La qualité prime (amendé le 2026-10-19). Le porteur du projet décide quand s'arrêter, et la tranche 1 reste fine.
 - **Comptes** : GitHub (dépôt public), Firebase (offre gratuite), et Vercel ou Streamlit pour l'hébergement (choix en étape 3). Aucun service payant en tranche 1.
   - **Firebase** remplace Supabase, car l'offre gratuite de Supabase n'a plus d'emplacement disponible. On utilise Firebase Authentication, Cloud Firestore et les règles de sécurité Firestore. Les règles s'appliquent par document, l'équivalent des règles par ligne.
   - **Logique serveur** : elle tourne dans les routes serveur de l'hébergeur, avec le SDK Admin de Firebase, et non dans Cloud Functions. Hypothèse à vérifier en étape 3 : Cloud Functions exige l'offre payante.
