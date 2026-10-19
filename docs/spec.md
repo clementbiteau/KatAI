@@ -39,7 +39,7 @@ Dans les deux sections, l'utilisateur n'écrit jamais de code. Il écrit une sp�
 | H2 | Le modèle reçoit uniquement la spécification de l'utilisateur, la signature attendue et une consigne de format. Il ne reçoit ni l'énoncé ni les tests | C'est le cœur de l'exercice : l'utilisateur doit transmettre lui-même toutes les règles de l'énoncé dans sa spécification |
 | H3 | Une clé au plus par fournisseur et par utilisateur | Enregistrer une nouvelle clé remplace l'ancienne |
 | H4 | Le modèle renvoie du JavaScript, pas du TypeScript | Pas de transpilation dans le bac à sable en T1 |
-| H5 | L'utilisateur voit le libellé et le statut de chaque test, mais pas leur code | Le retour reste utile sans livrer la solution dans l'interface (le code des tests reste lisible dans le dépôt public, risque accepté) |
+| H5 | L'utilisateur voit le libellé et le statut de chaque test, mais pas leur code. Amendé le 2026-10-19 : les libellés ne s'affichent qu'avec les résultats d'un essai ; avant le premier essai, seul leur nombre est visible | Le retour reste utile sans livrer la solution dans l'interface (le code des tests reste lisible dans le dépôt public, risque accepté) |
 | H6 | Le catalogue et les énoncés sont publics ; jouer exige d'être connecté | Un visiteur peut découvrir le produit avant de s'inscrire |
 | H7 | Décidée : interface et katas en anglais ; documents de démarche en français | Produit public pour développeurs. Les libellés des critères ci-dessous décrivent le sens, pas le texte exact |
 | HR1 | Le Randori se joue sur les katas du catalogue. Chaque kata a sa durée limite | Pas de contenu supplémentaire à écrire en T1 |
@@ -111,7 +111,7 @@ En tant qu'utilisateur connecté, je veux enregistrer ma clé API OpenAI ou Anth
 En tant que visiteur ou utilisateur, je veux voir les katas et leur énoncé, afin de choisir lequel pratiquer.
 
 - **CA3.1** Étant donné un visiteur non connecté, quand il ouvre le catalogue, alors il voit les 3 katas, avec leur titre, leur niveau, leur secteur, leur étape du cycle, un résumé et la compétence entraînée (« What you practice »).
-- **CA3.2** Étant donné un kata ouvert, quand la page s'affiche, alors on voit le brief client, la signature attendue et les libellés des tests, mais pas leur code. Pour un visiteur, l'action « S'entraîner » renvoie vers la connexion.
+- **CA3.2** Étant donné un kata ouvert, quand la page s'affiche, alors on voit le brief client, la signature attendue et le nombre de tests d'acceptation, mais ni leurs libellés ni leur code. Les libellés n'apparaissent qu'avec les résultats d'un essai (H5, amendée le 2026-10-19 : montrés d'avance, ils serviraient de liste de contrôle et fausseraient la mesure du premier essai). Pour un visiteur, l'action « S'entraîner » renvoie vers la connexion.
 - **CA3.3** Étant donné l'adresse d'un kata inexistant, quand on l'ouvre, alors une page « kata introuvable » propose un lien vers le catalogue.
 
 ### US4 Jouer un essai
