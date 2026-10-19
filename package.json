@@ -16,7 +16,7 @@
     "test": "vitest run --project unit",
     "test:emulator": "firebase emulators:exec --only firestore,auth --project demo-katai \"vitest run --project emulator\"",
     "check:structure": "node scripts/check-structure.ts",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "firebase": "13.0.0",
