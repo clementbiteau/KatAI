@@ -1,21 +1,28 @@
 # KatAI : spécification de la tranche 1
 
-Statut : étape 2, à valider. Date : 2026-10-16. Source : `docs/intent.md` v4, validée.
+Statut : étape 2, version 2 (ajout de la réinitialisation du mot de passe, du Randori et des deux sections ; H7 décidée), à valider. Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
 
 ## 1. Périmètre
 
+L'application a deux sections :
+- **Kata** : entraînement libre, sans limite de temps ;
+- **Randori** : le même exercice contre la montre.
+
+Dans les deux sections, l'utilisateur n'écrit jamais de code. Il écrit une spécification en langage naturel, le modèle écrit le code, et les tests jugent ce code.
+
 **Dans la tranche 1** :
-- US1 Compte ;
+- US1 Compte, réinitialisation du mot de passe comprise ;
 - US2 Clés fournisseur ;
 - US3 Catalogue ;
-- US4 Jouer un essai ;
+- US4 Jouer un essai (section Kata) ;
 - US5 Historique ;
 - US6 Comparer ;
-- exigences de sécurité S1 à S8 ;
+- US7 Randori ;
+- exigences de sécurité S1 à S9 ;
 - exigences de CI et de déploiement N1 à N4.
 
 **Hors tranche 1** :
-- réinitialisation du mot de passe et vérification de l'e-mail ;
+- vérification de l'e-mail ;
 - suppression du compte et export des données (requis avant d'ouvrir le produit à d'autres, donc en T2) ;
 - suppression d'un essai ;
 - mise en évidence des différences ;
@@ -34,7 +41,13 @@ Statut : étape 2, à valider. Date : 2026-10-16. Source : `docs/intent.md` v4, 
 | H4 | Le modèle renvoie du JavaScript, pas du TypeScript | Pas de transpilation dans le bac à sable en T1 |
 | H5 | L'utilisateur voit le libellé et le statut de chaque test, mais pas leur code | Le retour reste utile sans livrer la solution dans l'interface (le code des tests reste lisible dans le dépôt public, risque accepté) |
 | H6 | Le catalogue et les énoncés sont publics ; jouer exige d'être connecté | Un visiteur peut découvrir le produit avant de s'inscrire |
-| H7 | Interface et katas en anglais ; documents de démarche en français | Produit public pour développeurs. Les libellés des critères ci-dessous décrivent le sens, pas le texte exact |
+| H7 | Décidée : interface et katas en anglais ; documents de démarche en français | Produit public pour développeurs. Les libellés des critères ci-dessous décrivent le sens, pas le texte exact |
+| HR1 | Le Randori se joue sur les katas du catalogue. Chaque kata a sa durée limite | Pas de contenu supplémentaire à écrire en T1 |
+| HR2 | Le chronomètre est tenu par le serveur, qui enregistre l'heure de début et refuse toute soumission arrivée après l'échéance. Une soumission arrivée avant l'échéance compte, même si la réponse du modèle arrive après | Manipuler l'horloge du navigateur ne sert à rien |
+| HR3 | Un randori s'arrête au premier score parfait, à l'échéance ou sur abandon | Le résultat est connu dès l'arrêt |
+| HR4 | Résultat d'un randori : meilleur score, temps écoulé pour l'atteindre, nombre d'essais | — |
+| HR5 | Les essais d'un randori sont des essais ordinaires, rattachés à ce randori | Ils figurent dans l'historique et peuvent être comparés |
+| HR6 | Un seul randori en cours à la fois par utilisateur | Modèle simple, sans ambiguïté sur le chronomètre actif |
 
 **Valeurs proposées, ajustables :**
 
@@ -47,6 +60,7 @@ Statut : étape 2, à valider. Date : 2026-10-16. Source : `docs/intent.md` v4, 
 | Délai maximal d'exécution des tests | 5 s par essai |
 | Longueur acceptée pour une clé | 20 à 300 caractères, sans espace |
 | Mot de passe | 8 caractères au moins |
+| Durée d'un randori | 10 min (facile), 15 min (moyen), 20 min (difficile) |
 
 ## 3. Katas de départ
 
@@ -70,7 +84,9 @@ En tant qu'utilisateur, je veux créer un compte et me connecter, afin que mes c
 - **CA1.4** Étant donné des identifiants invalides, quand l'utilisateur tente de se connecter, alors un message générique s'affiche, sans préciser si c'est l'e-mail ou le mot de passe qui est faux.
 - **CA1.5** Étant donné trop de tentatives échouées, quand l'utilisateur réessaie, alors un message lui demande de patienter.
 - **CA1.6** Étant donné un utilisateur connecté, quand il se déconnecte, alors sa session prend fin, et les pages protégées le renvoient vers la connexion.
-- **CA1.7** Étant donné un visiteur sans session, quand il ouvre une page protégée (réglages, essai, historique, comparaison), alors il est renvoyé vers la connexion.
+- **CA1.7** Étant donné un visiteur sans session, quand il ouvre une page protégée (réglages, essai, historique, comparaison, randori), alors il est renvoyé vers la connexion.
+- **CA1.8** Étant donné un visiteur sur la page de connexion, quand il demande une réinitialisation pour un e-mail, alors un message neutre indique qu'un e-mail a été envoyé si un compte existe. Le message ne confirme jamais l'existence du compte. L'e-mail renvoie vers la page de réinitialisation fournie par Firebase, et le nouveau mot de passe permet ensuite de se connecter.
+- **CA1.9** Étant donné un lien de réinitialisation expiré ou déjà utilisé, quand le visiteur l'ouvre, alors un message l'indique, et une nouvelle demande reste possible.
 
 ### US2 Clés fournisseur
 
@@ -138,6 +154,27 @@ En tant qu'utilisateur connecté, je veux comparer côte à côte deux de mes es
 - **CA6.5** Étant donné une adresse de comparaison qui vise l'essai d'un autre utilisateur ou un essai inexistant, alors la page affiche « essai introuvable » dans les deux cas, pour ne pas révéler qu'il existe.
 - **CA6.6** Étant donné une adresse de comparaison qui vise deux essais de katas différents, alors la comparaison est refusée avec un message.
 
+### US7 Randori
+
+En tant qu'utilisateur connecté, je veux résoudre un kata en temps limité, afin de m'entraîner à spécifier vite et juste.
+
+- **CA7.1** Étant donné un utilisateur connecté, avec une clé configurée, quand il lance un randori sur un kata de niveau moyen, alors :
+  - le serveur enregistre un randori « en cours » et son heure de début ;
+  - un compte à rebours de 15:00 démarre ;
+  - l'énoncé s'affiche.
+- **CA7.2** Étant donné un randori en cours, quand l'utilisateur soumet une spécification, alors l'essai suit US4 et il est rattaché au randori. Le compte à rebours continue pendant la génération.
+- **CA7.3** Étant donné un essai au score parfait, alors le randori passe à « réussi » et le compte à rebours s'arrête. L'écran affiche le temps écoulé et le nombre d'essais.
+- **CA7.4** Étant donné l'échéance atteinte, alors la soumission est désactivée. Le randori passe à « terminé », avec son meilleur score.
+- **CA7.5** Étant donné une soumission qui arrive au serveur après l'échéance, quelle que soit l'horloge du navigateur, alors elle est refusée avec un message. Aucun appel au fournisseur ne part et aucun essai n'est enregistré.
+- **CA7.6** Étant donné une soumission arrivée avant l'échéance dont la réponse arrive après, alors l'essai compte.
+- **CA7.7** Étant donné une page fermée ou rechargée pendant un randori, quand l'utilisateur revient, alors le compte à rebours reprend sur le temps restant calculé par le serveur. Si l'échéance est passée, c'est le résultat qui s'affiche.
+- **CA7.8** Étant donné un randori en cours, quand l'utilisateur abandonne, alors le randori passe à « abandonné », et son meilleur score est conservé.
+- **CA7.9** Étant donné un randori déjà en cours, quand l'utilisateur en lance un autre, alors le lancement est refusé, avec un lien vers le randori en cours.
+- **CA7.10** Étant donné aucune clé pour le fournisseur choisi, quand l'utilisateur veut lancer un randori, alors un message avec un lien vers les réglages s'affiche, et le compte à rebours ne démarre pas.
+- **CA7.11** Étant donné des randoris passés sur un kata, quand l'utilisateur ouvre leur historique, alors ils sont listés du plus récent au plus ancien, avec : date, statut, meilleur score, temps écoulé et nombre d'essais.
+
+En T1, les tests tournent dans le navigateur : le score d'un randori reste falsifiable, comme celui d'un kata. C'est acceptable tant qu'il n'y a pas de classement.
+
 ## 5. Exigences de sécurité (tests automatiques)
 
 - **S1** Un visiteur anonyme lit les katas. Il ne lit ni n'écrit d'essais, de clés ou de profils.
@@ -148,6 +185,7 @@ En tant qu'utilisateur connecté, je veux comparer côte à côte deux de mes es
 - **S6** Toute route serveur vérifie le jeton d'identité. Sans jeton valide, elle répond 401.
 - **S7** Le serveur n'appelle que les adresses de la liste fermée des fournisseurs.
 - **S8** La clé en clair n'existe que dans la mémoire du serveur, le temps de l'appel au fournisseur.
+- **S9** Aucun client ne crée de randori avec une heure de début de son choix, ni ne modifie l'échéance ou le statut d'un randori. Seul le serveur le fait.
 
 ## 6. Exigences de CI et de déploiement
 
@@ -167,3 +205,4 @@ En tant qu'utilisateur connecté, je veux comparer côte à côte deux de mes es
 | R5 : CI verte et limites de structure | N1, N3 |
 | R6 : déploiement automatique | N2, N4 |
 | R7 : temps relevé | `docs/retro.md` |
+| R8 : randori de bout en bout | US7, S9 |

@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 4, validée le 2026-10-16. Date : 2026-10-16.
+Statut : étape 1, version 4, validée le 2026-10-16 ; amendée le 2026-10-19 (ajout du mode Randori, élément 12). Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -41,6 +41,7 @@ Offrir un dojo où l'on s'entraîne à écrire des spécifications qu'un modèle
 | R5 | La CI est verte sur `main` (tests, contrôle de structure, tests des règles), et un dépassement de limite fait échouer le build | CI, plus un test du script de contrôle sur un cas en échec |
 | R6 | Le déploiement depuis `main` est automatique (front, routes serveur, règles et index Firestore) | Exécution réussie du pipeline de déploiement |
 | R7 | Le temps passé est relevé par étape, sans plafond | Tableau des temps dans `docs/retro.md`, tiré de l'historique git |
+| R8 | Un randori se joue de bout en bout, avec un chronomètre tenu par le serveur | Tests automatiques sur l'échéance, plus un parcours manuel |
 
 La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur tout ce qui suit cette saisie.
 
@@ -103,6 +104,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 | 7 | Compte démo | Should | Permet d'essayer sans clé. Sans clé plateforme, la démo rejoue des essais enregistrés | T2 |
 | 10 | Publication et partage d'assets | Should | Crée l'effet communauté, mais introduit du contenu tiers (injection de prompt), de la modération et des règles de lecture publique | T3 |
 | 9 | Succès | Could | Motivant, mais suppose un score fiable, donc le bac à sable serveur | T3 |
+| 12 | Randori : kata contre la montre | Should | Entraîne à spécifier vite et juste. Le coût reste modéré, car il réutilise la boucle d'essai. Le chronomètre est tenu par le serveur | T1, en fin de construction |
 | 5 | Équipes | Could | Utile pour les équipes, mais complique fortement le modèle de sécurité (règles par équipe) ; inutile tant que l'usage reste individuel | T3 |
 
 **Won't**, pour ces trois tranches :
@@ -120,12 +122,14 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 - 3 katas originaux en JavaScript/TypeScript, exécutés dans le navigateur de façon isolée, avec un délai maximal.
 - Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur).
 - Comparaison de deux essais en deux colonnes. La mise en évidence des différences passe en T2, pour garder la tranche fine.
+- Deux sections : Kata (entraînement libre) et Randori (contre la montre, chronomètre tenu par le serveur).
 - CI (tests, contrôle de structure, règles de sécurité) et déploiement automatique.
 - README minimal.
 
 **Ligne de coupe**, appliquée dans cet ordre si la tranche déborde du week-end :
-1. Un seul fournisseur ; le second arrive en ouverture de T2.
-2. Déploiement manuel documenté à la place du déploiement automatique.
+1. Le Randori passe en ouverture de T2.
+2. Un seul fournisseur ; le second arrive en ouverture de T2.
+3. Déploiement manuel documenté à la place du déploiement automatique.
 
 La CI n'est jamais coupée.
 
