@@ -49,3 +49,12 @@ Index composés :
 - **Région Firestore** : européenne. Ce choix est définitif ; le nom exact se confirme à la création du projet.
 - **Quotas officiels de l'offre Spark** : 50 000 lectures, 20 000 écritures et 20 000 suppressions par jour, 1 Gio stocké. Un essai coûte environ 4 écritures, ce qui laisse une large marge en T1.
 - **Documentation des changements** : tout changement de schéma ou de règles met à jour cet ADR ou en ajoute un nouveau, et porte un commentaire d'en-tête dans `firestore.rules` (objet, collections touchées, effet sur les règles, retour arrière). C'est l'équivalent des migrations documentées.
+
+## Amendement du 2026-10-19 : authentification réalisée (T9)
+
+- **Côté client.** Firebase Authentication par e-mail et mot de passe. Les messages d'erreur ne révèlent jamais si un compte existe (CA1.2, CA1.4, CA1.8). La redirection après connexion n'accepte que des chemins internes, pour éviter les redirections ouvertes. Sans configuration Firebase, l'interface indique que la connexion est indisponible au lieu d'échouer.
+- **Tests.** Tests unitaires, tests sur l'émulateur Auth, et tests de bout en bout dans les trois navigateurs, sur un build de production branché aux émulateurs.
+- **À faire à la création du projet réel (T21) :**
+  - imposer côté Firebase la politique de mot de passe de 8 caractères minimum (Authentication, Settings, Password policy). Le contrôle de l'interface peut être contourné par un appel direct à l'API ;
+  - vérifier que la protection contre l'énumération des e-mails est active.
+- **Points couverts autrement que par un test de bout en bout.** Le lien de réinitialisation ouvre la page fournie par Firebase, qui gère aussi les liens expirés ou déjà utilisés (CA1.9). Le blocage après trop de tentatives (CA1.5) n'existe pas dans l'émulateur : seule la traduction du message est testée.

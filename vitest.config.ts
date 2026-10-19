@@ -21,6 +21,7 @@ export default defineConfig({
           name: "emulator",
           include: ["tests/emulator/**/*.test.ts"],
           environment: "node",
+          env: { NEXT_PUBLIC_FIREBASE_USE_EMULATORS: "1" },
           fileParallelism: false,
         },
       },
