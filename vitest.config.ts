@@ -25,7 +25,8 @@ export default defineConfig({
           name: "emulator",
           include: ["tests/emulator/**/*.test.ts"],
           environment: "node",
-          env: { NEXT_PUBLIC_FIREBASE_USE_EMULATORS: "1" },
+          // No Google Cloud metadata server exists locally: skip the Admin SDK lookup and its timeout.
+          env: { NEXT_PUBLIC_FIREBASE_USE_EMULATORS: "1", METADATA_SERVER_DETECTION: "none" },
           fileParallelism: false,
         },
       },

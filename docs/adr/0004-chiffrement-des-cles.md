@@ -36,3 +36,21 @@ A : AES-256-GCM avec `node:crypto`.
   - procédure de rotation documentée dans le README ;
   - l'interface conseille d'utiliser une clé dédiée à KatAI, avec un plafond de dépense chez le fournisseur.
 - Tests : aller-retour chiffrement puis déchiffrement, échec avec d'autres données associées, échec avec un chiffré altéré.
+
+## Amendement du 2026-10-19 : réalisation (T11)
+
+- **Versions des clés maîtresses.** La version courante est donnée par `KEY_ENCRYPTION_KEY_VERSION` (1 par défaut). Chaque clé chiffrée enregistre sa version.
+- **Rotation, sans interruption de service :**
+  1. ajouter `KEY_ENCRYPTION_KEY_PREVIOUS` (l'ancienne clé maîtresse) ;
+  2. remplacer `KEY_ENCRYPTION_KEY` par une nouvelle clé générée avec `openssl rand -base64 32` ;
+  3. incrémenter `KEY_ENCRYPTION_KEY_VERSION`.
+
+  Les clés de version précédente restent déchiffrables. Le rechiffrement au prochain usage se fera lors de l'appel au modèle (T14).
+- **Déchiffrement.** La fonction existe dès T11 pour être testée avec le chiffrement, et sert en T14.
+- **Routes.** `POST /api/keys` contrôle la forme de la clé, la chiffre avec les données associées `uid:provider`, l'enregistre et ne renvoie que son statut. `DELETE /api/keys?provider=` supprime le document chiffré. Sans clé maîtresse configurée, la route répond 503, sans rien journaliser.
+- **Tests :**
+  - en unitaire : aller-retour, IV unique, refus si l'utilisateur, le fournisseur, le chiffré ou l'étiquette change, rotation ;
+  - sur les émulateurs : écriture, remplacement, refus des requêtes invalides, 401, suppression, aucun journal contenant la clé, y compris en cas de mauvaise configuration ;
+  - de bout en bout dans les 3 navigateurs : aucune réponse de `/api/keys` ne contient jamais la clé (R3).
+
+  Une mutation qui renvoie la clé dans la réponse est détectée.

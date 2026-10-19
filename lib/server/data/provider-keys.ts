@@ -1,9 +1,8 @@
 import "server-only";
-import type { Timestamp } from "firebase-admin/firestore";
-import { PROVIDERS, type Provider } from "../../providers.ts";
+import { FieldValue, type Timestamp } from "firebase-admin/firestore";
+import { PROVIDERS, type Provider, type ProviderKeyStatus } from "../../providers.ts";
 import { getAdminDb } from "../firebase-admin.ts";
-
-export type ProviderKeyStatus = { provider: Provider; configured: boolean; updatedAt: string | null };
+import type { EncryptedKey } from "../key-encryption.ts";
 
 function keyDocument(uid: string, provider: Provider) {
   return getAdminDb().doc(`providerKeys/${uid}_${provider}`);
@@ -17,4 +16,17 @@ export async function listProviderKeyStatuses(uid: string): Promise<ProviderKeyS
     const updatedAt = snapshot?.exists ? (snapshot.get("updatedAt") as Timestamp | undefined) : undefined;
     return { provider, configured: Boolean(snapshot?.exists), updatedAt: updatedAt?.toDate().toISOString() ?? null };
   });
+}
+
+// One key per user and provider: saving again replaces the previous key (H3, CA2.3).
+export async function saveProviderKey(uid: string, provider: Provider, encrypted: EncryptedKey): Promise<ProviderKeyStatus> {
+  const document = keyDocument(uid, provider);
+  await document.set({ uid, provider, ...encrypted, updatedAt: FieldValue.serverTimestamp() });
+  const updatedAt = (await document.get()).get("updatedAt") as Timestamp;
+  return { provider, configured: true, updatedAt: updatedAt.toDate().toISOString() };
+}
+
+export async function deleteProviderKey(uid: string, provider: Provider): Promise<ProviderKeyStatus> {
+  await keyDocument(uid, provider).delete();
+  return { provider, configured: false, updatedAt: null };
 }

@@ -12,7 +12,7 @@
     "build": "next build",
     "start": "next start",
     "build:e2e": "KATAI_E2E=1 NEXT_PUBLIC_FIREBASE_USE_EMULATORS=1 next build",
-    "start:e2e": "KATAI_E2E=1 NEXT_PUBLIC_FIREBASE_USE_EMULATORS=1 next start --port 3100",
+    "start:e2e": "KATAI_E2E=1 NEXT_PUBLIC_FIREBASE_USE_EMULATORS=1 METADATA_SERVER_DETECTION=none KEY_ENCRYPTION_KEY=$(openssl rand -base64 32) next start --port 3100",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit",
