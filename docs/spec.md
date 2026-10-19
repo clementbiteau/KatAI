@@ -1,6 +1,6 @@
 # KatAI : spécification de la tranche 1
 
-Statut : étape 2, version 2 (ajout de la réinitialisation du mot de passe, du Randori et des deux sections ; H7 décidée), à valider. Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
+Statut : étape 2, version 2, validée le 2026-10-19. Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
 
 ## 1. Périmètre
 
