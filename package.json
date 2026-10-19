@@ -11,10 +11,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build:e2e": "KATAI_E2E=1 next build",
+    "start:e2e": "KATAI_E2E=1 next start --port 3100",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --project unit",
     "test:browser": "vitest run --project browser",
+    "test:e2e": "playwright test",
     "test:emulator": "firebase emulators:exec --only firestore,auth --project demo-katai \"vitest run --project emulator\"",
     "check:structure": "node scripts/check-structure.ts",
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && git config core.hooksPath .githooks || true"
@@ -27,6 +30,7 @@
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
+    "@playwright/test": "1.64.1",
     "@testing-library/react": "16.3.3",
     "@types/node": "24.19.2",
     "@types/react": "19.3.0",

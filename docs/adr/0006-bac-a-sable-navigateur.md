@@ -55,3 +55,8 @@ Le prototype valide l'option A dans Chromium 156 (Chrome Headless Shell de Playw
 **Restent à vérifier**
 - Firefox et Safari, en T8 ou en T22.
 - La sérialisation de l'évaluateur une fois compilée par le build de production Next (SWC) : couverte en T8 par un test de bout en bout sur le build de production.
+
+## Amendement du 2026-10-19 : vérifications complétées (T8)
+
+- **Trois moteurs.** Les tests d'isolation passent sous Chromium 156, Firefox 157 et WebKit 27.2 (navigateurs de Playwright 1.64.1), témoins compris.
+- **Build de production.** Un test de bout en bout tourne sur le build de production de Next et passe dans les trois moteurs. Pour chaque kata, il soumet les solutions de référence et naïve à travers la vraie interface. Le score affiché par le bac à sable est toujours identique à celui que calcule l'évaluateur dans Node. La sérialisation de l'évaluateur résiste donc au compilateur de production.
