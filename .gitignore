@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Test and emulator output
+coverage/
+test-results/
+playwright-report/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Local secrets: never commit them
+.env
+.env.*
+!.env.example
+*.pem
+service-account*.json
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Local Claude Code tooling
+.claude/

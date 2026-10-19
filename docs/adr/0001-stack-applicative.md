@@ -34,6 +34,7 @@ A : Next.js (App Router) et TypeScript, hébergé sur Vercel.
 
 - **Versions relevées sur npm le 2026-10-19** : `next` 16.4.2, `react` 19.3.1, `typescript` 7.0.2, `vitest` 5.0.5, `@playwright/test` 1.64.1.
   - La compatibilité de Next 16 avec TypeScript 7 sera vérifiée en première tâche de construction, avec un repli possible sur TypeScript 6.
+  - Amendement du 2026-10-19 (T1) : le repli est appliqué. `typescript` 7.0.2 n'expose plus l'API de compilation JavaScript : son export principal ne renvoie que la version, le reste passe par des API `unstable/*`. Next et le contrôle de structure (ADR 0009) en ont besoin, donc le projet fige `typescript` 6.0.3.
   - Next 16.4.2 demande Node 20.9 ou plus. La version de Node exécutée par Vercel sera fixée en première tâche.
 - **Arborescence pour tenir les 3 niveaux** :
   - pas de dossier `src/` ;
