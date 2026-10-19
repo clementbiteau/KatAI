@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-commit guard: blocks staged secrets, then structure violations.
+# Enabled by `npm install` (prepare script sets core.hooksPath to .githooks).
+set -eu
+
+hook_dir=$(cd "$(dirname "$0")" && pwd)
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks is required (brew install gitleaks)." >&2
+  exit 1
+fi
+
+gitleaks git --pre-commit --staged --redact --no-banner --exit-code 1 .
+node "$hook_dir/../scripts/check-structure.ts"
