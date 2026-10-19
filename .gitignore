@@ -3,6 +3,7 @@ node_modules/
 
 # Next.js build output
 .next/
+.next-e2e/
 out/
 next-env.d.ts
 *.tsbuildinfo
@@ -10,6 +11,7 @@ next-env.d.ts
 # Test and emulator output
 coverage/
 test-results/
+.vitest/
 playwright-report/
 firebase-debug.log
 firestore-debug.log

@@ -3,6 +3,8 @@
   --color-text: #1d2521;
   --color-muted: #55615b;
   --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-passed: #1f7a4a;
+  --color-failed: #b3261e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -10,6 +12,8 @@
     --color-background: #141a17;
     --color-text: #e8ece9;
     --color-muted: #a3b0a9;
+    --color-passed: #7fd1a1;
+    --color-failed: #f19a8f;
   }
 }
 
@@ -33,4 +37,21 @@ body {
 
 .home p {
   color: var(--color-muted);
+}
+
+.results-score {
+  font-weight: 600;
+}
+
+.results-list {
+  padding-left: 1.25rem;
+}
+
+.results-list [data-status="passed"] {
+  color: var(--color-passed);
+}
+
+.results-list [data-status="failed"],
+.results-list [data-status="timeout"] {
+  color: var(--color-failed);
 }

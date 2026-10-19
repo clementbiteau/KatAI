@@ -37,7 +37,7 @@ L'étape 5 est terminée quand T0 à T5 sont faits. Les tâches suivantes formen
 
 | # | Tâche | Lot | Durée | Vérification |
 |---|---|---|---|---|
-| T6 | Format d'un kata, puis 3 énoncés en anglais et 8 à 12 tests déclaratifs par kata (toi : validation des énoncés). Solutions de référence dans `tests/` | L2 | 1 h | Les solutions de référence réussissent 100 % des tests ; une solution naïve en échoue au moins 2 par kata |
+| T6 | Format d'un kata, puis 3 énoncés en anglais et 8 à 12 tests déclaratifs par kata (toi : validation des énoncés). Solutions de référence dans `tests/`. Refaite le 2026-10-19 : katas recadrés en briefs clients retail, luxe et banque (intention, section 8 bis) | L2 | 1 h, plus 1 h de reprise | Les solutions de référence réussissent 100 % des tests ; une solution naïve en échoue au moins 2 par kata |
 | T7 | Prototype du bac à sable : iframe d'origine opaque, worker créé depuis un Blob, CSP sans réseau. Job Playwright ajouté à la CI | L2 | 1 h | Tests Playwright : fonction correcte réussie ; erreur de syntaxe signalée (CA4.8) ; boucle infinie arrêtée à 5 s (CA4.9) ; `fetch`, `localStorage` et `indexedDB` inaccessibles (CA4.10). Si le prototype échoue, bascule sur le repli D de l'ADR 0006 |
 | T8 | Exécuteur de tests intégré, avec un résultat par test (réussi, échoué, délai dépassé) | L2 | 45 min | Playwright : la solution de référence de K1 atteint 100 % ; la solution naïve obtient le score attendu |
 | T9 | Authentification : client Firebase ; inscription, connexion, déconnexion, réinitialisation ; garde des pages protégées | L3 | 1 h | Tests contre l'émulateur Auth (CA1.1 à CA1.9) ; parcours manuel |

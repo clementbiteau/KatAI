@@ -23,6 +23,7 @@ L'offre gratuite de Supabase n'a plus d'emplacement disponible, et l'intention r
 - Firebase Authentication, par e-mail et mot de passe, avec l'e-mail de réinitialisation et la page fournis par Firebase.
 - Cloud Firestore.
 - Katas en fichiers TypeScript versionnés (option B) : énoncé, signature, nom de fonction, niveau, tests déclaratifs. Ils sont importés par le serveur comme par le navigateur.
+  - Amendement du 2026-10-19 : l'énoncé devient un brief client (`brief`), et chaque kata gagne un secteur (`sector`), une étape du cycle (`stage`) et une compétence entraînée (`practice`). Format : `katas/types.ts`.
 
 ## Raisons
 
