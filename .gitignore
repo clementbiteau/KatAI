@@ -10,6 +10,7 @@ next-env.d.ts
 # Test and emulator output
 coverage/
 test-results/
+.vitest/
 playwright-report/
 firebase-debug.log
 firestore-debug.log

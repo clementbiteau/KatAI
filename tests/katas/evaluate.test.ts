@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { deepEqual, runKataTests } from "../../katas/evaluate.ts";
+import { createEvaluator, runKataTests } from "../../katas/evaluate.ts";
 import type { KataTest } from "../../katas/types.ts";
+
+const { deepEqual } = createEvaluator();
 
 describe("deepEqual", () => {
   it("compares nested arrays and objects regardless of key order", () => {
