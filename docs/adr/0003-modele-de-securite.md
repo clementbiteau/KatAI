@@ -52,3 +52,11 @@ B : le client lit, le serveur écrit.
 - **Le SDK Admin contourne les règles.** Le risque est concentré dans le module d'accès aux données, d'où ses tests dédiés.
 - **Le score reste falsifiable.** Le client rapporte le résultat des tests au serveur. C'est accepté en T1 (intention), et le bac à sable serveur arrive en T2.
 - **Une faille XSS exposerait le jeton Firebase**, stocké côté client. Parades : CSP stricte, échappement natif de React, aucun `dangerouslySetInnerHTML`.
+
+## Amendement du 2026-10-19 : socle serveur réalisé (T10)
+
+- **Module d'accès aux données.** Avec la limite de 5 fonctions par fichier, le module unique devient le dossier `lib/server/data/`, avec un fichier par collection. C'est le seul endroit autorisé à appeler `getAdminDb()`, qui contourne les règles.
+- **Code serveur uniquement.** Tout le code serveur importe `server-only` : un import depuis le navigateur fait échouer le build.
+- **Garde-fou sur les émulateurs.** Avec les variables d'émulateur, le SDK Admin accepte des jetons non signés. Ces variables sont donc refusées à côté d'un vrai compte de service et sur tout déploiement Vercel (`VERCEL_ENV`), ce que vérifie un test unitaire.
+- **Routes.** `withUser` vérifie le jeton Firebase, révocation comprise, avant tout traitement, et répond 401 sinon (S6). Les réponses personnelles portent `Cache-Control: no-store`.
+- **Tests.** Route `GET /api/keys` testée sur les émulateurs : 401 dans quatre cas de jeton absent ou invalide, statut des seules clés de l'appelant, jamais de chiffré dans la réponse. Une mutation qui supprime la vérification du jeton fait échouer ces tests.
