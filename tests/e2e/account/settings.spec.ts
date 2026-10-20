@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { signUp, uniqueEmail } from "./helpers.ts";
+import { signUp, uniqueEmail } from "../helpers.ts";
 
 const anthropicKey = "sk-ant-e2e-" + "k".repeat(40);
 

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { signOut, signUp, uniqueEmail } from "./helpers.ts";
+import { signOut, signUp, uniqueEmail } from "../helpers.ts";
 
 // Full sign-up, sign-in, sign-out and reset flows on a production build wired to
 // the Firebase Auth emulator. Each test uses its own email, so tests can run in parallel.

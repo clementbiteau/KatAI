@@ -241,3 +241,12 @@ button {
   word-break: break-word;
   margin: 0;
 }
+
+.randori-clock {
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.randori-outcome {
+  font-weight: 600;
+}

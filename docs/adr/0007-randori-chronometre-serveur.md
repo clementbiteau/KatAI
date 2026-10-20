@@ -56,3 +56,11 @@ B : horodatages serveur, échéance vérifiée à chaque action.
 - **Résultat.** Il met à jour `bestPassed` pour tout essai soumis avant l'échéance, même si le résultat arrive après (CA7.6). Le premier score parfait clôt le randori en `succeeded`, avec `bestElapsedMs` mesuré entre le début et la soumission de cet essai (CA7.3).
 - **Statut effectif.** Un randori `running` dont l'échéance est passée est présenté comme `timeout` avant même d'être clos en base (`effectiveRandoriStatus`, partagé avec le client).
 - **Horloge injectable.** Les fonctions serveur prennent l'heure en paramètre, ce que les tests exploitent. Une mutation qui supprime le contrôle de l'échéance est détectée.
+
+## Amendement du 2026-10-20 : interface réalisée (T19)
+
+- **Section `/randori`.** Chaque kata y figure avec sa durée, un bouton de lancement et l'historique de ses randoris (CA7.11). Un refus renvoie vers le randori en cours (CA7.9) ou vers les réglages s'il manque la clé (CA7.10).
+- **Page `/randori/[id]`.** Elle lit une fois le randori par l'API, pour mesurer l'écart entre l'horloge du navigateur et celle du serveur (`serverNow`), puis le suit en direct par Firestore côté client, sous les règles du propriétaire. Le compte à rebours applique cet écart (CA7.7), et le meilleur score, le nombre d'essais et la réussite apparaissent dès que le serveur les enregistre.
+- **Fin du temps.** À l'échéance, le formulaire se ferme sans attendre la clôture côté serveur (CA7.4), et le serveur refuse de toute façon une soumission tardive (CA7.5).
+- **Statut affiché.** L'historique calcule le statut effectif à l'arrivée des données, pas pendant le rendu : ESLint signalait à juste titre un appel à `Date.now()` dans le rendu.
+- **Tests.** Tests de composants avec horloge simulée (fin du temps, réussite, abandon). Tests de bout en bout dans les 3 navigateurs : lancement, reprise après rechargement, deux essais jusqu'à la réussite, historique, randori unique, clé manquante, abandon. L'expiration réelle en 10 minutes reste couverte par les tests serveur avec horloge injectée.

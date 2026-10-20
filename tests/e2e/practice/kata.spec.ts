@@ -1,17 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
-import { findKata } from "../../katas/catalog.ts";
-import { signOut, signUp, toGeneratedCode, uniqueEmail } from "./helpers.ts";
+import { findKata } from "../../../katas/catalog.ts";
+import { saveAnthropicKey, signOut, signUp, toGeneratedCode, uniqueEmail } from "../helpers.ts";
 
 // The production build runs with the echo provider (KATAI_FAKE_PROVIDER=1, emulators only):
 // the "model" returns the code block written in the spec, so the flow is fully deterministic.
 const kata = findKata("retail-cart")!;
-
-async function saveKey(page: Page) {
-  await page.goto("/settings");
-  await page.getByLabel("Anthropic API key").fill("sk-ant-e2e-" + "k".repeat(40));
-  await page.getByRole("button", { name: "Save key" }).click();
-  await expect(page.getByText(/Configured on/)).toBeVisible();
-}
 
 async function submitSpec(page: Page, spec: string) {
   await page.getByLabel("Your specification").fill(spec);
@@ -48,7 +41,7 @@ test("without a key, the user is sent to Settings and keeps the spec (CA4.3)", a
 
 test("a full attempt: generated code is shown as text, run in the sandbox and scored (CA4.1)", async ({ page }, testInfo) => {
   await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
-  await saveKey(page);
+  await saveAnthropicKey(page);
   await page.goto(`/katas/${kata.id}`);
 
   await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "reference") + "```");
@@ -63,7 +56,7 @@ test("a full attempt: generated code is shown as text, run in the sandbox and sc
 
 test("an answer without code fails every test at once (CA4.7)", async ({ page }, testInfo) => {
   await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
-  await saveKey(page);
+  await saveAnthropicKey(page);
   await page.goto(`/katas/${kata.id}`);
   await submitSpec(page, "A spec without any code block.");
   await expect(page.getByText("No code was found in the model's answer, so every test fails.")).toBeVisible();
@@ -72,7 +65,7 @@ test("an answer without code fails every test at once (CA4.7)", async ({ page },
 
 test("the history lists attempts live, most recent first, and only their owner can open them (US5, CA6.5)", async ({ page }, testInfo) => {
   await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
-  await saveKey(page);
+  await saveAnthropicKey(page);
   await page.goto(`/katas/${kata.id}`);
   const history = page.getByRole("region", { name: "Your attempts" });
   await expect(history).toContainText("No attempt yet.");
@@ -102,7 +95,7 @@ test("the history lists attempts live, most recent first, and only their owner c
 
 test("two attempts are compared side by side, the older on the left (US6)", async ({ page }, testInfo) => {
   await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
-  await saveKey(page);
+  await saveAnthropicKey(page);
   await page.goto(`/katas/${kata.id}`);
   await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "reference") + "```");
   await expect(page.getByTestId("score")).toHaveText("12 / 12 tests passed");
