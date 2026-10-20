@@ -1,4 +1,7 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { expect, type Page } from "@playwright/test";
+import ts from "typescript";
 
 // Shared steps for end-to-end tests on the emulator-backed production build.
 
@@ -17,4 +20,14 @@ export async function signUp(page: Page, email: string, password: string) {
 export async function signOut(page: Page) {
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+}
+
+// Turns a verified solution file into plain JavaScript that defines the kata's function,
+// like a model's answer would.
+export function toGeneratedCode(kataId: string, functionName: string, solution: "reference" | "naive"): string {
+  const source = readFileSync(resolve(import.meta.dirname, `../katas/solutions/${kataId}.ts`), "utf8");
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
+  });
+  return `${outputText.replace(/^export /gm, "")}\nvar ${functionName} = ${solution};\n`;
 }

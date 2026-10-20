@@ -137,3 +137,50 @@ button {
   display: flex;
   gap: 0.75rem;
 }
+
+.kata-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.kata-list h2 {
+  margin-bottom: 0.25rem;
+}
+
+.kata-meta {
+  color: var(--color-muted);
+  margin-top: 0;
+}
+
+.kata-brief p {
+  margin: 0.25rem 0;
+}
+
+.attempt-code {
+  overflow-x: auto;
+  padding: 0.75rem;
+  border: 1px solid var(--color-muted);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.spec-form textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.spec-counter {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.spec-counter-over {
+  color: var(--color-failed);
+}
+
+.attempt-meta {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}

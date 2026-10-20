@@ -60,3 +60,10 @@ B : le client lit, le serveur écrit.
 - **Garde-fou sur les émulateurs.** Avec les variables d'émulateur, le SDK Admin accepte des jetons non signés. Ces variables sont donc refusées à côté d'un vrai compte de service et sur tout déploiement Vercel (`VERCEL_ENV`), ce que vérifie un test unitaire.
 - **Routes.** `withUser` vérifie le jeton Firebase, révocation comprise, avant tout traitement, et répond 401 sinon (S6). Les réponses personnelles portent `Cache-Control: no-store`.
 - **Tests.** Route `GET /api/keys` testée sur les émulateurs : 401 dans quatre cas de jeton absent ou invalide, statut des seules clés de l'appelant, jamais de chiffré dans la réponse. Une mutation qui supprime la vérification du jeton fait échouer ces tests.
+
+## Amendement du 2026-10-20 : résultat d'un essai (T15)
+
+- **Route.** `PATCH /api/attempts` enregistre le score calculé par le bac à sable, une seule fois. Une transaction refuse un second envoi (409, S5) et un essai en erreur. Les résultats doivent reprendre exactement les tests du kata, dans l'ordre, avec un statut connu ; le score est recalculé côté serveur.
+- **Essai d'un autre utilisateur.** Il reçoit la même réponse qu'un essai inexistant (404, CA6.5), pour ne pas révéler qu'il existe.
+- **Score.** Il reste falsifiable par le client tant que le bac à sable serveur (T2) n'existe pas. C'est accepté en T1, puisqu'il n'y a ni classement ni succès.
+- **Profondeur des routes.** La route de résultat partage le fichier `app/api/attempts/route.ts` (méthode `PATCH`) : un sous-dossier `result` aurait dépassé la limite de 3 niveaux de sous-dossiers.

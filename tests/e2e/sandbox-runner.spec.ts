@@ -1,22 +1,10 @@
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { expect, test } from "@playwright/test";
-import ts from "typescript";
 import { KATAS } from "../../katas/catalog.ts";
 import { runKataTests } from "../../katas/evaluate.ts";
+import { toGeneratedCode } from "./helpers.ts";
 
 // Runs on a production build (npm run test:e2e), so it also proves that the
 // evaluator survives the Next.js production compiler once serialized into the worker.
-
-// Turns a verified solution file into plain JavaScript that defines the kata's function,
-// like a model's answer would.
-function toGeneratedCode(kataId: string, functionName: string, solution: "reference" | "naive"): string {
-  const source = readFileSync(resolve(import.meta.dirname, `../katas/solutions/${kataId}.ts`), "utf8");
-  const { outputText } = ts.transpileModule(source, {
-    compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ESNext },
-  });
-  return `${outputText.replace(/^export /gm, "")}\nvar ${functionName} = ${solution};\n`;
-}
 
 async function expectedPassCount(kataId: string, solution: "reference" | "naive"): Promise<number> {
   const solutions = await import(`../katas/solutions/${kataId}.ts`);
