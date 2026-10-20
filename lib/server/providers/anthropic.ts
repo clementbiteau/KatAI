@@ -1,8 +1,7 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { categorizeHttpStatus } from "./error-category.ts";
-import { extractCode } from "./extract-code.ts";
-import { buildSystemPrompt, buildUserMessage } from "./prompt.ts";
+import { buildSystemPrompt, buildUserMessage, extractCode } from "./prompt.ts";
 import type { ErrorCategory, Generation, GenerationRequest, ProviderCallOptions } from "./types.ts";
 
 // Fixed address: never taken from input or from ANTHROPIC_BASE_URL (S7).

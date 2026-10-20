@@ -6,21 +6,21 @@ import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 export type EncryptedKey = { ciphertext: string; iv: string; authTag: string; keyVersion: number };
 
-function currentVersion(): number {
+export function currentKeyVersion(): number {
   return Number(process.env.KEY_ENCRYPTION_KEY_VERSION || "1");
 }
 
 // The current master key, or the previous one while a rotation is in progress.
 function masterKey(version: number): Buffer {
-  const encoded = version === currentVersion() ? process.env.KEY_ENCRYPTION_KEY : process.env.KEY_ENCRYPTION_KEY_PREVIOUS;
-  if (!encoded) throw new Error(version === currentVersion() ? "KEY_ENCRYPTION_KEY is not configured." : "Unknown key version.");
+  const encoded = version === currentKeyVersion() ? process.env.KEY_ENCRYPTION_KEY : process.env.KEY_ENCRYPTION_KEY_PREVIOUS;
+  if (!encoded) throw new Error(version === currentKeyVersion() ? "KEY_ENCRYPTION_KEY is not configured." : "Unknown key version.");
   const key = Buffer.from(encoded, "base64");
   if (key.length !== 32) throw new Error("KEY_ENCRYPTION_KEY must be 32 bytes.");
   return key;
 }
 
 export function encryptProviderKey(plaintext: string, associatedData: string): EncryptedKey {
-  const keyVersion = currentVersion();
+  const keyVersion = currentKeyVersion();
   const iv = randomBytes(12);
   const cipher = createCipheriv("aes-256-gcm", masterKey(keyVersion), iv);
   cipher.setAAD(Buffer.from(associatedData, "utf8"));

@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { findKata } from "../../katas/catalog.ts";
-import { extractCode } from "../../lib/server/providers/extract-code.ts";
-import { buildSystemPrompt, buildUserMessage } from "../../lib/server/providers/prompt.ts";
+import { buildSystemPrompt, buildUserMessage, extractCode } from "../../lib/server/providers/prompt.ts";
 
 describe("prompt (H2: the model only sees the spec and the signature)", () => {
   const kata = findKata("retail-cart")!;
