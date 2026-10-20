@@ -99,3 +99,32 @@ test("the history lists attempts live, most recent first, and only their owner c
   await page.goto(attemptUrl);
   await expect(page.getByText("Attempt not found.")).toBeVisible();
 });
+
+test("two attempts are compared side by side, the older on the left (US6)", async ({ page }, testInfo) => {
+  await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
+  await saveKey(page);
+  await page.goto(`/katas/${kata.id}`);
+  await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "reference") + "```");
+  await expect(page.getByTestId("score")).toHaveText("12 / 12 tests passed");
+  await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "naive") + "```");
+  await expect(page.getByTestId("score")).toHaveText("4 / 12 tests passed");
+
+  const history = page.getByRole("region", { name: "Your attempts" });
+  const compare = history.getByRole("button", { name: "Compare selected" });
+  await expect(compare).toBeDisabled();
+  for (const checkbox of await history.getByRole("checkbox").all()) await checkbox.check();
+  await compare.click();
+
+  await expect(page).toHaveURL(/\/compare\?a=[^&]+&b=[^&]+$/);
+  const scoreRow = page.getByRole("row").filter({ has: page.getByRole("rowheader", { name: "Score" }) });
+  await expect(scoreRow.getByRole("cell")).toHaveText(["12 / 12", "4 / 12"]);
+  const freeUnitRow = page.getByRole("row").filter({ has: page.getByRole("rowheader", { name: "Every third unit is free" }) });
+  await expect(freeUnitRow.getByRole("cell")).toHaveText(["Passed", "Failed"]);
+  const compareUrl = page.url();
+
+  await signOut(page);
+  await expect(page).toHaveURL(/\/login\?next=%2Fcompare%3Fa%3D.+%26b%3D/);
+  await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
+  await page.goto(compareUrl);
+  await expect(page.getByText("Attempt not found.")).toBeVisible();
+});
