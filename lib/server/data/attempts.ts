@@ -1,6 +1,6 @@
 import "server-only";
 import { FieldValue, type DocumentSnapshot, type Timestamp } from "firebase-admin/firestore";
-import { attemptViewFromData, type AttemptResult, type AttemptStatus, type AttemptView } from "../../attempts.ts";
+import { attemptViewFromData, type AttemptResult, type AttemptStatus, type AttemptView } from "../../attempts/view.ts";
 import type { Provider } from "../../providers.ts";
 import { getAdminDb } from "../firebase-admin.ts";
 

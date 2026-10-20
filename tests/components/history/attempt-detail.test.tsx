@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AttemptView } from "../../../lib/attempts.ts";
+import type { AttemptView } from "../../../lib/attempts/view.ts";
 
 const readAttempt = vi.fn<(id: string) => Promise<AttemptView | null>>();
-vi.mock("../../../lib/attempt-reader.ts", () => ({ readAttempt }));
+vi.mock("../../../lib/attempts/reader.ts", () => ({ readAttempt }));
 
 const { AttemptDetail } = await import("../../../components/history/attempt-detail.tsx");
 

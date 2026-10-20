@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { findKata } from "../../katas/catalog.ts";
-import type { AttemptView } from "../../lib/attempts.ts";
-import { readAttempt } from "../../lib/attempt-reader.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
+import { readAttempt } from "../../lib/attempts/reader.ts";
 import { describeErrorCategory } from "../kata/attempt-messages.ts";
 import { SandboxResults } from "../sandbox-results.tsx";
 import { formatAttemptDate, formatDuration, modelLabel } from "./attempt-format.ts";

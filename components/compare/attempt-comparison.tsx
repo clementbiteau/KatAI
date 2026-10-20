@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { findKata } from "../../katas/catalog.ts";
-import type { AttemptView } from "../../lib/attempts.ts";
-import { readAttempt } from "../../lib/attempt-reader.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
+import { readAttempt } from "../../lib/attempts/reader.ts";
 import { buildComparisonRows, comparisonProblem, orderByDate } from "./comparison-rows.ts";
 
 type Loaded = { status: "loading" } | { status: "problem"; message: string } | { status: "ready"; pair: [AttemptView, AttemptView] };

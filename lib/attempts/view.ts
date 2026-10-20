@@ -1,4 +1,4 @@
-import type { Provider } from "./providers.ts";
+import type { Provider } from "../providers.ts";
 
 // Shape of an attempt as the API returns it (docs/adr/0002). Never contains a provider key.
 

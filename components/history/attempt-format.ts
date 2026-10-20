@@ -1,4 +1,4 @@
-import type { AttemptView } from "../../lib/attempts.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
 import { PROVIDER_MODELS } from "../../lib/providers.ts";
 
 // Shared wording for attempts in the history, the detail page and the comparison.

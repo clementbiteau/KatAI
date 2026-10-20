@@ -1,5 +1,5 @@
 import { findKata } from "../../katas/catalog.ts";
-import type { AttemptView } from "../../lib/attempts.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
 import { describeErrorCategory } from "../kata/attempt-messages.ts";
 import { describeAttemptScore, formatAttemptDate, formatDuration, modelLabel } from "../history/attempt-format.ts";
 

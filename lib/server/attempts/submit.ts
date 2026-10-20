@@ -1,5 +1,5 @@
 import "server-only";
-import type { AttemptView } from "../../attempts.ts";
+import type { AttemptView } from "../../attempts/view.ts";
 import { findKata } from "../../../katas/catalog.ts";
 import type { Kata } from "../../../katas/types.ts";
 import { isProvider, isSupportedModel, type Provider } from "../../providers.ts";

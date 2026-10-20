@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import type { AttemptView } from "../../lib/attempts.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
 import { authorizedFetch } from "../../lib/api-client.ts";
 import type { Kata } from "../../katas/types.ts";
 import { runInSandbox } from "../../sandbox/run-in-sandbox.ts";
