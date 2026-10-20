@@ -68,3 +68,10 @@ Index composés :
   - Il est `error` quand l'appel échoue. La catégorie est dans `errorCategory`.
 - **`randoriId`** vaut `null` jusqu'à T18.
 - **`usage/{uid}.recentSubmissions`** contient les horodatages, en millisecondes, des soumissions de la dernière minute. Il est mis à jour dans une transaction : la limite de 5 tient même face à des requêtes parallèles, et un test le vérifie.
+
+## Amendement du 2026-10-20 : schéma des randoris (T18)
+
+- **Nouveau champ.** `randoris` reçoit un champ `provider`, le fournisseur choisi au lancement, dont la clé est vérifiée (CA7.10). Les autres champs suivent le schéma initial ; `startedAt` et `deadline` sont des `Timestamp` posés par l'horloge du serveur.
+- **Lien avec les essais.** `attempts.randoriId` relie un essai à son randori.
+- **Règles.** Elles sont inchangées : lecture par le propriétaire, aucune écriture client (S9). Retour arrière : retirer le champ `provider` ; seul le serveur le lit.
+- **Organisation.** Les types partagés passent dans `lib/attempts/` et `lib/randoris/`, pour rester sous la limite de 5 fichiers dans `lib/`.

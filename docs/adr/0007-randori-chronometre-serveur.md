@@ -47,3 +47,12 @@ B : horodatages serveur, échéance vérifiée à chaque action.
 - Seule l'horloge du serveur fait foi.
 - Le score reste rapporté par le client, donc falsifiable. C'est accepté en T1.
 - Tests : échéance dépassée, soumission refusée sans appel au fournisseur, résultat tardif accepté, randori unique, abandon. Ils tournent contre l'émulateur, avec une horloge injectable.
+
+## Amendement du 2026-10-20 : réalisation côté serveur (T18)
+
+- **Routes.** `POST /api/randoris` démarre un randori, `PATCH /api/randoris` l'abandonne, et `GET /api/randoris?id=` le relit. Chaque réponse porte `serverNow`. Une soumission d'essai rattachée à un randori passe par `POST /api/attempts` avec `randoriId`.
+- **Démarrage.** Il se fait dans une transaction : les randoris `running` dont l'échéance est passée sont clos en `timeout`, et un randori encore actif bloque le lancement (HR6, CA7.9). La durée vient du niveau du kata : 10, 15 ou 20 minutes.
+- **Soumission.** Avant toute limite d'essais et tout appel au modèle, elle vérifie le propriétaire, le kata, le statut et l'heure d'arrivée de la requête face à l'échéance (CA7.5). `attemptsCount` augmente à la création de l'essai.
+- **Résultat.** Il met à jour `bestPassed` pour tout essai soumis avant l'échéance, même si le résultat arrive après (CA7.6). Le premier score parfait clôt le randori en `succeeded`, avec `bestElapsedMs` mesuré entre le début et la soumission de cet essai (CA7.3).
+- **Statut effectif.** Un randori `running` dont l'échéance est passée est présenté comme `timeout` avant même d'être clos en base (`effectiveRandoriStatus`, partagé avec le client).
+- **Horloge injectable.** Les fonctions serveur prennent l'heure en paramètre, ce que les tests exploitent. Une mutation qui supprime le contrôle de l'échéance est détectée.

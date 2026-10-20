@@ -3,6 +3,7 @@ import type { AttemptResult, AttemptView } from "../../attempts/view.ts";
 import { findKata } from "../../../katas/catalog.ts";
 import { getAdminDb } from "../firebase-admin.ts";
 import { saveAttemptResult } from "../data/attempts.ts";
+import { recordRandoriResult } from "../data/randori-progress.ts";
 
 const STATUSES = new Set(["passed", "failed", "timeout"]);
 
@@ -34,6 +35,9 @@ export async function recordAttemptResult(uid: string, body: unknown): Promise<R
   const result = toAttemptResult(snapshot.get("kataId"), outcomes);
   if (!result) return { ok: false, status: 400, error: "Invalid result." };
   const saved = await saveAttemptResult(uid, attemptId, result);
-  if ("attempt" in saved) return { ok: true, attempt: saved.attempt };
+  if ("attempt" in saved) {
+    if (saved.attempt.randoriId) await recordRandoriResult(saved.attempt.randoriId, saved.attempt);
+    return { ok: true, attempt: saved.attempt };
+  }
   return saved.error === "not-found" ? notFound : { ok: false, status: 409, error: "This attempt already has a result." };
 }
