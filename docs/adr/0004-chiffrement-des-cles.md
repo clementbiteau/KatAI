@@ -54,3 +54,9 @@ A : AES-256-GCM avec `node:crypto`.
   - de bout en bout dans les 3 navigateurs : aucune réponse de `/api/keys` ne contient jamais la clé (R3).
 
   Une mutation qui renvoie la clé dans la réponse est détectée.
+
+## Amendement du 2026-10-20 : déchiffrement à l'usage (T14)
+
+- **Durée de vie de la clé en clair.** La clé est déchiffrée uniquement dans la route de soumission, le temps de l'appel au modèle (S8).
+- **Rechiffrement.** Si elle a été chiffrée avec l'ancienne clé maîtresse, elle est rechiffrée aussitôt avec la clé courante, et un test le vérifie. Effet de bord accepté : la date « Configured on » affichée devient celle du rechiffrement.
+- **Clé illisible.** Si la clé ne peut plus être déchiffrée (chiffré altéré, ancienne clé maîtresse retirée), la route répond 409 `unreadable-key` et invite à l'enregistrer de nouveau. Aucun appel n'est alors fait.

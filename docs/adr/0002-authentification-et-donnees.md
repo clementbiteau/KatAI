@@ -58,3 +58,13 @@ Index composés :
   - imposer côté Firebase la politique de mot de passe de 8 caractères minimum (Authentication, Settings, Password policy). Le contrôle de l'interface peut être contourné par un appel direct à l'API ;
   - vérifier que la protection contre l'énumération des e-mails est active.
 - **Points couverts autrement que par un test de bout en bout.** Le lien de réinitialisation ouvre la page fournie par Firebase, qui gère aussi les liens expirés ou déjà utilisés (CA1.9). Le blocage après trop de tentatives (CA1.5) n'existe pas dans l'émulateur : seule la traduction du message est testée.
+
+## Amendement du 2026-10-20 : schéma des essais (T14)
+
+- **Nouveau champ `httpStatus`** dans `attempts` (nombre, ou null) : le statut HTTP renvoyé par le fournisseur quand l'appel échoue. Il sert au diagnostic et à l'observabilité (T2). Les règles ne changent pas, puisque seul le serveur écrit. Retour arrière : supprimer le champ ; aucun lecteur n'en dépend.
+- **Statuts.**
+  - Un essai part en `generated` quand le code est à exécuter dans le bac à sable.
+  - Il est `done` d'emblée quand la réponse ne contient pas de code (CA4.7). Son résultat vaut alors 0 sur N, avec tous les tests en échec.
+  - Il est `error` quand l'appel échoue. La catégorie est dans `errorCategory`.
+- **`randoriId`** vaut `null` jusqu'à T18.
+- **`usage/{uid}.recentSubmissions`** contient les horodatages, en millisecondes, des soumissions de la dernière minute. Il est mis à jour dans une transaction : la limite de 5 tient même face à des requêtes parallèles, et un test le vérifie.

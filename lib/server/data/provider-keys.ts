@@ -30,3 +30,11 @@ export async function deleteProviderKey(uid: string, provider: Provider): Promis
   await keyDocument(uid, provider).delete();
   return { provider, configured: false, updatedAt: null };
 }
+
+// Encrypted key for a model call (T14): only the server ever reads it (S3).
+export async function readProviderKey(uid: string, provider: Provider): Promise<EncryptedKey | null> {
+  const snapshot = await keyDocument(uid, provider).get();
+  if (!snapshot.exists) return null;
+  const { ciphertext, iv, authTag, keyVersion } = snapshot.data() as EncryptedKey;
+  return { ciphertext, iv, authTag, keyVersion };
+}
