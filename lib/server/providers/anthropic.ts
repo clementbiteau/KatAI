@@ -58,6 +58,12 @@ export async function generateWithAnthropic(
     };
   } catch (error) {
     if (!(error instanceof Anthropic.APIError)) throw error;
-    return { ok: false, category: categorizeAnthropicError(error), latencyMs: Date.now() - started };
+    return {
+      ok: false,
+      category: categorizeAnthropicError(error),
+      latencyMs: Date.now() - started,
+      ...(error.status ? { httpStatus: error.status } : {}),
+      ...(error.type ? { providerErrorType: error.type } : {}),
+    };
   }
 }
