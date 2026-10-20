@@ -42,4 +42,7 @@ A : Next.js (App Router) et TypeScript, hébergé sur Vercel.
   - aucun segment dynamique imbriqué : la comparaison passe par `app/compare/page.tsx?a=…&b=…`.
 - **Tests** : une arborescence `tests/` séparée, qui reproduit celle du code. Placer les tests à côté du code doublerait le nombre de fichiers par dossier.
 - **Styles** : CSS natif ou modules CSS, sans framework de styles, pour éviter des fichiers de configuration en plus à la racine.
+  - Amendement du 2026-10-20 (T24) : l'identité visuelle reste en CSS natif, dans `app/globals.css`, avec des variables pour les modes clair et sombre. Le mode suit le réglage du système, sans bouton de bascule.
+  - Les trois polices (Newsreader pour les titres, Geist pour le texte, Geist Mono pour le code) viennent des paquets npm `@fontsource-variable/*` 5.3.0, versions figées, sous licence OFL. `next/font/local` les intègre à la build. Aucune requête vers un service de polices n'a lieu, ni à la build ni à l'exécution, et la CSP n'autorise rien de plus que `'self'` (ADR 0003).
+  - L'accessibilité est vérifiée par `@axe-core/playwright` 4.13.0, dans les tests de bout en bout. Aucune violation sérieuse ou critique n'est tolérée, en mode clair comme en mode sombre. Les dépendances ajoutées ont toutes été publiées plus de deux semaines avant leur adoption.
 - **Offre Hobby de Vercel** : elle est prévue pour un usage personnel, à revoir si le produit devient commercial.

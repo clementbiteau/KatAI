@@ -25,6 +25,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.135.0",
+    "@fontsource-variable/geist": "5.3.0",
+    "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/newsreader": "5.3.0",
     "firebase": "13.0.0",
     "firebase-admin": "14.5.0",
     "next": "16.4.2",
@@ -33,6 +36,7 @@
     "server-only": "0.0.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@firebase/rules-unit-testing": "6.0.0",
     "@playwright/test": "1.64.1",
     "@testing-library/react": "16.3.3",

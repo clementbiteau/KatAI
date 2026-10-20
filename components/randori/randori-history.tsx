@@ -31,37 +31,39 @@ export function RandoriHistory({ uid, kataId }: { uid: string; kataId: string })
   const randoris = useKataRandoris(uid, kataId);
   if (randoris === null) return null;
   if (randoris === "error") return <p role="alert">Your randoris could not be loaded.</p>;
-  if (randoris.length === 0) return <p>No randori yet on this kata.</p>;
+  if (randoris.length === 0) return <p className="empty-state">No randori yet on this kata.</p>;
   return (
-    <table className="attempt-table">
-      <thead>
-        <tr>
-          <th scope="col">Date</th>
-          <th scope="col">Status</th>
-          <th scope="col">Best score</th>
-          <th scope="col">Time</th>
-          <th scope="col">Attempts</th>
-          <th scope="col">
-            <span className="visually-hidden">Open</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {randoris.map((randori) => (
-          <tr key={randori.id}>
-            <td>{formatAttemptDate(randori.startedAt)}</td>
-            <td>{STATUS_TEXT[randori.status]}</td>
-            <td>
-              {randori.bestPassed} / {randori.total}
-            </td>
-            <td>{randori.bestElapsedMs === null ? "—" : formatClock(randori.bestElapsedMs)}</td>
-            <td>{randori.attemptsCount}</td>
-            <td>
-              <Link href={`/randori/${randori.id}`}>{randori.status === "running" ? "Resume" : "View"}</Link>
-            </td>
+    <div className="table-scroll">
+      <table className="attempt-table">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Status</th>
+            <th scope="col">Best score</th>
+            <th scope="col">Time</th>
+            <th scope="col">Attempts</th>
+            <th scope="col">
+              <span className="visually-hidden">Open</span>
+            </th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {randoris.map((randori) => (
+            <tr key={randori.id}>
+              <td>{formatAttemptDate(randori.startedAt)}</td>
+              <td>{STATUS_TEXT[randori.status]}</td>
+              <td>
+                {randori.bestPassed} / {randori.total}
+              </td>
+              <td>{randori.bestElapsedMs === null ? "—" : formatClock(randori.bestElapsedMs)}</td>
+              <td>{randori.attemptsCount}</td>
+              <td>
+                <Link href={`/randori/${randori.id}`}>{randori.status === "running" ? "Resume" : "View"}</Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
