@@ -11,6 +11,7 @@ const submit = vi.fn();
 
 vi.mock("../../../components/auth/auth-context.tsx", () => ({ useAuthState: () => authState }));
 vi.mock("../../../components/kata/use-attempt.ts", () => ({ useAttempt: () => ({ state: attemptState, submit }) }));
+vi.mock("../../../components/history/attempt-history.tsx", () => ({ AttemptHistory: () => null }));
 
 const { KataWorkspace } = await import("../../../components/kata/kata-workspace.tsx");
 const kata = findKata("retail-cart")!;

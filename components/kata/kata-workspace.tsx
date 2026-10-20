@@ -6,6 +6,7 @@ import type { Kata } from "../../katas/types.ts";
 import { PROVIDER_MODELS } from "../../lib/providers.ts";
 import { MAX_SPEC_LENGTH, validateSpec } from "../../lib/specs.ts";
 import { useAuthState } from "../auth/auth-context.tsx";
+import { AttemptHistory } from "../history/attempt-history.tsx";
 import { AttemptOutcome } from "./attempt-outcome.tsx";
 import { useAttempt } from "./use-attempt.ts";
 
@@ -66,5 +67,13 @@ export function KataWorkspace({ kata }: { kata: Kata }) {
       </p>
     );
   }
-  return <AttemptForm kata={kata} />;
+  return (
+    <>
+      <AttemptForm kata={kata} />
+      <section aria-label="Your attempts">
+        <h2>Your attempts</h2>
+        <AttemptHistory key={auth.user.uid} uid={auth.user.uid} kataId={kata.id} />
+      </section>
+    </>
+  );
 }

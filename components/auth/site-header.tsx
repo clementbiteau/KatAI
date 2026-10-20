@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signOutUser } from "../../lib/auth/service.ts";
 import { useAuthState } from "./auth-context.tsx";
 
 export function SiteHeader() {
   const state = useAuthState();
-  const router = useRouter();
 
-  const handleSignOut = async () => {
-    await signOutUser();
-    router.push("/");
+  // No navigation here: a public page stays as it is, and a protected page sends the
+  // visitor to sign in through RequireAuth. One navigation only, so no race between two.
+  const handleSignOut = () => {
+    void signOutUser();
   };
 
   return (

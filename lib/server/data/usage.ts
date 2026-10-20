@@ -10,6 +10,7 @@ export type Reservation = { allowed: true } | { allowed: false; retryAfterSecond
 // transaction keeps the count exact even when requests arrive in parallel.
 export async function reserveSubmission(uid: string, now: number = Date.now()): Promise<Reservation> {
   const document = getAdminDb().doc(`usage/${uid}`);
+  // More attempts than the default 5: parallel submissions from one user contend on one document.
   return getAdminDb().runTransaction(async (transaction) => {
     const snapshot = await transaction.get(document);
     const recent = ((snapshot.get("recentSubmissions") as number[] | undefined) ?? []).filter(
@@ -21,5 +22,5 @@ export async function reserveSubmission(uid: string, now: number = Date.now()): 
     }
     transaction.set(document, { recentSubmissions: [...recent, now] });
     return { allowed: true };
-  });
+  }, { maxAttempts: 10 });
 }
