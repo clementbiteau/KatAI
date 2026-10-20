@@ -20,8 +20,15 @@ describe("smoke-provider script", () => {
     expect(result.stderr).toContain("Set KATAI_SMOKE_KEY first");
   });
 
+  it("refuses a value that is not shaped like an API key, before any call", () => {
+    const result = runSmoke(["anthropic"], "twelve-chars");
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("is not a usable key (12 characters)");
+    expect(result.stdout + result.stderr).not.toContain("twelve-chars");
+  });
+
   it("refuses an unknown provider without printing the key", () => {
-    const result = runSmoke(["mistral"], "sk-secret-value-never-printed");
+    const result = runSmoke(["mistral"], "sk-secret-value-never-printed-" + "x".repeat(20));
     expect(result.status).toBe(1);
     expect(result.stderr).toContain("Unknown provider: mistral");
     expect(result.stdout + result.stderr).not.toContain("sk-secret-value-never-printed");
