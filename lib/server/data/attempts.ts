@@ -51,3 +51,21 @@ export async function createAttempt(uid: string, attempt: NewAttempt): Promise<A
     .add({ uid, ...attempt, createdAt: FieldValue.serverTimestamp() });
   return toAttemptView(await document.get());
 }
+
+// Records the sandbox result exactly once (S5), in a transaction so two concurrent
+// reports cannot both succeed. Another user's attempt counts as not found.
+export async function saveAttemptResult(
+  uid: string,
+  attemptId: string,
+  result: AttemptResult,
+): Promise<{ attempt: AttemptView } | { error: "not-found" | "already-finished" }> {
+  const document = getAdminDb().doc(`attempts/${attemptId}`);
+  const outcome = await getAdminDb().runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(document);
+    if (!snapshot.exists || snapshot.get("uid") !== uid) return "not-found" as const;
+    if (snapshot.get("status") !== "generated" || snapshot.get("result") !== null) return "already-finished" as const;
+    transaction.update(document, { status: "done", result });
+    return "saved" as const;
+  });
+  return outcome === "saved" ? { attempt: toAttemptView(await document.get()) } : { error: outcome };
+}

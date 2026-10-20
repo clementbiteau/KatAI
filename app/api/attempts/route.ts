@@ -1,3 +1,4 @@
+import { recordAttemptResult } from "../../../lib/server/attempts/result.ts";
 import { parseSubmission, submitAttempt } from "../../../lib/server/attempts/submit.ts";
 import { privateJson, withUser } from "../../../lib/server/session.ts";
 
@@ -15,4 +16,10 @@ export const POST = withUser(async (request, user) => {
     return privateJson({ error: body.error, code: body.code, retryAfterSeconds: body.retryAfterSeconds }, status);
   }
   return privateJson({ attempt: outcome.attempt });
+});
+
+// Records the score computed by the browser sandbox, once per attempt (S5).
+export const PATCH = withUser(async (request, user) => {
+  const outcome = await recordAttemptResult(user.uid, await request.json().catch(() => null));
+  return outcome.ok ? privateJson({ attempt: outcome.attempt }) : privateJson({ error: outcome.error }, outcome.status);
 });
