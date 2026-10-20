@@ -113,7 +113,12 @@ describe("generateWithAnthropic", () => {
     [400, "invalid_request_error", "request-refused"],
   ])("maps HTTP %i (%s) to %s, without retrying (CA4.5, CA4.6)", async (status, type, category) => {
     const fetch = fakeFetch(status, apiError(type));
-    expect(await generateWithAnthropic(userKey, request, { fetch })).toMatchObject({ ok: false, category });
+    expect(await generateWithAnthropic(userKey, request, { fetch })).toMatchObject({
+      ok: false,
+      category,
+      httpStatus: status,
+      providerErrorType: type,
+    });
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 

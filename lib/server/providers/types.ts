@@ -24,7 +24,14 @@ type Usage = { inputTokens: number; outputTokens: number };
 
 export type Generation =
   | ({ ok: true; code: string | null; truncated: boolean; servedModel: string; latencyMs: number } & Usage)
-  | ({ ok: false; category: ErrorCategory; latencyMs: number } & Partial<Usage>);
+  | ({
+      ok: false;
+      category: ErrorCategory;
+      latencyMs: number;
+      // What the provider answered, for diagnosis and observability: never the key or the prompt.
+      httpStatus?: number;
+      providerErrorType?: string;
+    } & Partial<Usage>);
 
 // Test seams only: production code always uses the defaults.
 export type ProviderCallOptions = { fetch?: typeof globalThis.fetch; timeoutMs?: number };
