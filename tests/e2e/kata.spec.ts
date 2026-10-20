@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { findKata } from "../../katas/catalog.ts";
-import { signUp, toGeneratedCode, uniqueEmail } from "./helpers.ts";
+import { signOut, signUp, toGeneratedCode, uniqueEmail } from "./helpers.ts";
 
 // The production build runs with the echo provider (KATAI_FAKE_PROVIDER=1, emulators only):
 // the "model" returns the code block written in the spec, so the flow is fully deterministic.
@@ -68,4 +68,34 @@ test("an answer without code fails every test at once (CA4.7)", async ({ page },
   await submitSpec(page, "A spec without any code block.");
   await expect(page.getByText("No code was found in the model's answer, so every test fails.")).toBeVisible();
   await expect(page.getByTestId("score")).toHaveText("0 / 12 tests passed");
+});
+
+test("the history lists attempts live, most recent first, and only their owner can open them (US5, CA6.5)", async ({ page }, testInfo) => {
+  await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
+  await saveKey(page);
+  await page.goto(`/katas/${kata.id}`);
+  const history = page.getByRole("region", { name: "Your attempts" });
+  await expect(history).toContainText("No attempt yet.");
+
+  await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "reference") + "```");
+  await expect(page.getByTestId("score")).toHaveText("12 / 12 tests passed");
+  await submitSpec(page, "```javascript\n" + toGeneratedCode(kata.id, kata.functionName, "naive") + "```");
+  await expect(page.getByTestId("score")).toHaveText("4 / 12 tests passed");
+
+  const rows = history.getByRole("row");
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(1).getByRole("cell").nth(2)).toHaveText("4 / 12");
+  await expect(rows.nth(2).getByRole("cell").nth(2)).toHaveText("12 / 12");
+
+  await rows.nth(1).getByRole("link", { name: "View" }).click();
+  await expect(page).toHaveURL(/\/attempts\/[^/]+$/);
+  const attemptUrl = page.url();
+  await expect(page.getByTestId("score")).toHaveText("4 / 12 tests passed");
+  await expect(page.locator("article")).toContainText("function naive");
+
+  await signOut(page);
+  await expect(page).toHaveURL(/\/login\?next=%2Fattempts%2F/);
+  await signUp(page, uniqueEmail(testInfo.project.name), "correct-horse");
+  await page.goto(attemptUrl);
+  await expect(page.getByText("Attempt not found.")).toBeVisible();
 });

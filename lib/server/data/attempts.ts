@@ -1,6 +1,6 @@
 import "server-only";
 import { FieldValue, type DocumentSnapshot, type Timestamp } from "firebase-admin/firestore";
-import type { AttemptResult, AttemptStatus, AttemptView } from "../../attempts.ts";
+import { attemptViewFromData, type AttemptResult, type AttemptStatus, type AttemptView } from "../../attempts.ts";
 import type { Provider } from "../../providers.ts";
 import { getAdminDb } from "../firebase-admin.ts";
 
@@ -23,25 +23,8 @@ export type NewAttempt = {
 };
 
 function toAttemptView(snapshot: DocumentSnapshot): AttemptView {
-  const data = snapshot.data() ?? {};
-  return {
-    id: snapshot.id,
-    kataId: data.kataId,
-    randoriId: data.randoriId,
-    provider: data.provider,
-    model: data.model,
-    servedModel: data.servedModel,
-    spec: data.spec,
-    code: data.code,
-    status: data.status,
-    errorCategory: data.errorCategory,
-    truncated: data.truncated,
-    latencyMs: data.latencyMs,
-    inputTokens: data.inputTokens,
-    outputTokens: data.outputTokens,
-    createdAt: (data.createdAt as Timestamp).toDate().toISOString(),
-    result: data.result,
-  };
+  const createdAt = (snapshot.get("createdAt") as Timestamp).toDate().toISOString();
+  return attemptViewFromData(snapshot.id, snapshot.data() ?? {}, createdAt);
 }
 
 // Attempts are only ever written by the server (docs/adr/0003); the uid comes from the verified token.

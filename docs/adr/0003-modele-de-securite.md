@@ -67,3 +67,11 @@ B : le client lit, le serveur écrit.
 - **Essai d'un autre utilisateur.** Il reçoit la même réponse qu'un essai inexistant (404, CA6.5), pour ne pas révéler qu'il existe.
 - **Score.** Il reste falsifiable par le client tant que le bac à sable serveur (T2) n'existe pas. C'est accepté en T1, puisqu'il n'y a ni classement ni succès.
 - **Profondeur des routes.** La route de résultat partage le fichier `app/api/attempts/route.ts` (méthode `PATCH`) : un sous-dossier `result` aurait dépassé la limite de 3 niveaux de sous-dossiers.
+
+## Amendement du 2026-10-20 : lecture côté client réalisée (T16)
+
+- **Lectures directes sous les règles.** L'historique et le détail d'un essai sont lus par le navigateur avec le SDK client Firestore, sous les règles « lecture par le propriétaire uniquement ». L'historique est un abonnement en direct, ce qui affiche un nouvel essai ou un nouveau score sans recharger la page. Il s'appuie sur l'index composé `attempts (uid, kataId, createdAt desc)`, à déployer avec les règles en T21.
+- **Essai d'un autre utilisateur.** Les règles refusent sa lecture, et l'interface affiche alors le même message qu'un essai inexistant (CA6.5). Un test sur les émulateurs le vérifie avec le SDK client, et un test de bout en bout avec un second compte.
+- **Une seule conversion des documents.** `attemptViewFromData` (`lib/attempts.ts`) sert au serveur comme au navigateur.
+- **Limite d'essais et contention.** La transaction de la limite d'essais (T14) passe à 10 tentatives au plus. Le test des requêtes parallèles, instable une fois sur trois sur l'émulateur, est stabilisé à 6 requêtes avec un délai adapté : il vérifie l'exactitude, pas la vitesse.
+- **Déconnexion.** Elle ne déclenche plus de navigation : la garde des pages protégées est la seule à rediriger. Les tests de bout en bout sous Firefox et WebKit ont révélé une course entre deux navigations, désormais supprimée.
