@@ -11,17 +11,19 @@ const COPY = {
 } as const;
 
 // Email and password form shared by the sign-in and sign-up pages. On success it goes
-// to the internal page the user was heading to, or to the home page.
+// to the internal page the user was heading to, or to the home page. The fields are read
+// when the form is sent, so text typed before React takes over the page is never lost.
 export function CredentialsForm({ mode }: { mode: "sign-in" | "sign-up" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const fields = new FormData(event.currentTarget);
+    const email = String(fields.get("email") ?? "");
+    const password = String(fields.get("password") ?? "");
     const invalid = mode === "sign-up" ? validateCredentials(email, password) : null;
     if (invalid) {
       setError(invalid);
@@ -42,17 +44,11 @@ export function CredentialsForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     <form className="form" onSubmit={handleSubmit} noValidate>
       <label>
         Email
-        <input type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+        <input name="email" type="email" autoComplete="email" required />
       </label>
       <label>
         Password
-        <input
-          type="password"
-          autoComplete={COPY[mode].autoComplete}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
+        <input name="password" type="password" autoComplete={COPY[mode].autoComplete} required />
       </label>
       {error && <p role="alert">{error}</p>}
       <button type="submit" disabled={pending}>
