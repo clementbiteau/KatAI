@@ -95,3 +95,13 @@ Avant chaque appel, une transaction sur `usage/{uid}` :
   - Le vrai SDK tourne contre un `fetch` simulé et injecté. Les tests vérifient la requête réellement émise : adresse, en-têtes, clé de l'utilisateur, effort, plafond de tokens, repli, absence de nouvelle tentative, correspondance des erreurs.
   - Deux mutations sont détectées : le retrait de l'adresse fixe et le retour aux nouvelles tentatives par défaut.
 - **Vérification réelle.** Elle se fait hors CI avec `npm run smoke:provider`, lancé par le porteur du projet avec sa clé dans `KATAI_SMOKE_KEY`. Le script n'affiche jamais la clé et n'exécute jamais le code généré.
+
+**Vérification réelle du 2026-10-20** (`npm run smoke:provider`, avec la clé du porteur du projet)
+
+| Modèle | Résultat | Durée | Tokens en entrée | Tokens en sortie |
+|---|---|---|---|---|
+| `claude-haiku-5-5` | Accepté, réponse servie par `claude-haiku-5-5` | 3,9 s | 392 | 792 |
+| `claude-opus-5-5` | Accepté, réponse servie par `claude-opus-5-5`, avec repli et `effort: "low"` | 4,2 s | 392 | 485 |
+
+- Les deux réponses contiennent un seul bloc de code exploitable, sans `export`.
+- Un premier essai avec une valeur qui n'était pas une clé a été refusé par Anthropic (`401 authentication_error`), puis classé en `key-refused` en un seul appel. C'est le comportement attendu (CA4.5).
