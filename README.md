@@ -8,7 +8,7 @@ A coding dojo for working with AI agents. You practice writing **specifications*
 
 1. Pick a kata and read its statement.
 2. Write a spec for your model. The model only sees your spec and the expected function signature, never the statement or the tests.
-3. Your model (OpenAI or Anthropic, with your own API key) generates the code.
+3. Your model (Anthropic Claude, with your own API key) generates the code. More providers may come later.
 4. The code runs against the kata's tests in an isolated browser sandbox.
 5. Compare attempts side by side, or race the clock in Randori mode.
 

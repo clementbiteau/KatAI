@@ -44,7 +44,7 @@ L'étape 5 est terminée quand T0 à T5 sont faits. Les tâches suivantes formen
 | T10 | Base serveur : vérification du jeton (S6) et module d'accès aux données avec le SDK Admin (ADR 0003). Ajusté le 2026-10-19 : inclut la première route réelle, `GET /api/keys` (état des clés), pour ne pas livrer de code sans usage ; T11 garde l'enregistrement, la suppression et le chiffrement | L3 | 45 min | Tests des routes : 401 sans jeton ou avec un jeton invalide, 200 avec un jeton valide de l'émulateur |
 | T11 | Chiffrement des clés (ADR 0004), routes `/api/keys` (enregistrer, état, supprimer), page de réglages | L4 | 1 h | Tests unitaires du chiffrement (aller-retour, données associées, chiffré altéré) ; tests des routes CA2.1 à CA2.7 ; journal espionné sans la clé |
 | T12 | Adaptateur Anthropic : SDK, adresse fixe, aucune nouvelle tentative, délai, effort `low`, 16 000 tokens, repli, correspondance des erreurs, extraction du code (ADR 0005) | L5 | 1 h | Tests unitaires avec un SDK simulé : chaque catégorie d'erreur, réponse sans code, réponse tronquée, clé toujours explicite. Un appel réel avec ta clé (toi), hors CI |
-| T13 | Adaptateur OpenAI : vérification préalable des modèles et de l'API sur la documentation officielle, puis même périmètre que T12 | L5 | 1 h | Mêmes tests que T12 ; un appel réel avec ta clé (toi), hors CI |
+| T13 | Adaptateur OpenAI : vérification préalable des modèles et de l'API sur la documentation officielle, puis même périmètre que T12. **Reportée le 2026-10-20** : OpenAI passe en Could, sur décision du porteur du projet. La vérification préalable faite est consignée dans l'ADR 0005 | L5 | 1 h | Mêmes tests que T12 ; un appel réel avec ta clé (toi), hors CI |
 | T14 | Route de soumission d'un essai : limite de 5 par minute (transaction), prompt H2, appel, enregistrement de l'essai et des métriques | L5 | 1 h | Tests contre l'émulateur, adaptateurs simulés : CA4.3, CA4.4, CA4.5, CA4.6, CA4.7, CA4.11 ; vérification que ni l'énoncé ni les tests ne sont envoyés (H2) |
 | T15 | Section Kata : catalogue, énoncé, éditeur de spécification, soumission, code affiché en texte, exécution, enregistrement du résultat une seule fois | L6 | 1 h | Tests des composants (CA3.1 à CA3.3, CA4.2, CA4.12) ; test de la route de résultat (une seule écriture, S5) ; parcours manuel |
 | T16 | Historique d'un kata et détail d'un essai (US5) | L6 | 45 min | Tests des composants CA5.1 à CA5.3 ; règle « lecture de ses propres essais uniquement » vérifiée |
@@ -72,7 +72,7 @@ L'étape 5 est terminée quand T0 à T5 sont faits. Les tâches suivantes formen
 ## Ligne de coupe (intention, section 9)
 
 1. Le Randori (T18, T19) passe en ouverture de T2.
-2. OpenAI (T13) passe en ouverture de T2. La route T14 et l'interface ne proposent alors qu'Anthropic.
+2. OpenAI (T13) sort de T1. **Appliqué le 2026-10-20**, OpenAI passant en Could : la route T14 et l'interface ne proposent qu'Anthropic.
 3. Le job de déploiement des règles (T21) est remplacé par un déploiement manuel documenté.
 
 La CI n'est jamais coupée.

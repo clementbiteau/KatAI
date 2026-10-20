@@ -71,26 +71,28 @@ describe("POST /api/keys", () => {
     }
     await POST(apiRequest("/api/keys", { method: "POST", token: alice.idToken, body: { provider: "anthropic", key: anthropicKey } }));
     vi.stubEnv("KEY_ENCRYPTION_KEY", "");
-    const misconfigured = await POST(apiRequest("/api/keys", { method: "POST", token: alice.idToken, body: { provider: "openai", key: anthropicKey } }));
+    const misconfigured = await POST(apiRequest("/api/keys", { method: "POST", token: alice.idToken, body: { provider: "anthropic", key: replacementKey } }));
     expect(misconfigured.status).toBe(503);
     expect(logged.join("\n")).not.toContain(anthropicKey);
+    expect(logged.join("\n")).not.toContain(replacementKey);
   });
 });
 
 describe("DELETE /api/keys", () => {
-  it("deletes the encrypted key and leaves other providers untouched (CA2.4)", async () => {
-    for (const provider of ["anthropic", "openai"]) {
-      await POST(apiRequest("/api/keys", { method: "POST", token: alice.idToken, body: { provider, key: anthropicKey } }));
+  it("deletes the caller's encrypted key and leaves other users' keys untouched (CA2.4)", async () => {
+    const bob = await createUserToken("bob@example.com");
+    for (const user of [alice, bob]) {
+      await POST(apiRequest("/api/keys", { method: "POST", token: user.idToken, body: { provider: "anthropic", key: anthropicKey } }));
     }
     const response = await DELETE(apiRequest("/api/keys?provider=anthropic", { method: "DELETE", token: alice.idToken }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ provider: "anthropic", configured: false, updatedAt: null });
     expect((await storedKey(alice.uid, "anthropic")).exists).toBe(false);
-    expect((await storedKey(alice.uid, "openai")).exists).toBe(true);
+    expect((await storedKey(bob.uid, "anthropic")).exists).toBe(true);
   });
 
   it("refuses an unknown provider and requests without a valid token", async () => {
-    expect((await DELETE(apiRequest("/api/keys?provider=mistral", { method: "DELETE", token: alice.idToken }))).status).toBe(400);
+    expect((await DELETE(apiRequest("/api/keys?provider=openai", { method: "DELETE", token: alice.idToken }))).status).toBe(400);
     expect((await DELETE(apiRequest("/api/keys?provider=anthropic", { method: "DELETE" }))).status).toBe(401);
   });
 });

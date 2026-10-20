@@ -1,6 +1,6 @@
 # KatAI : spécification de la tranche 1
 
-Statut : étape 2, version 2, validée le 2026-10-19 ; amendée le 2026-10-19 (plafond de tokens, catégories d'erreur, ADR 0005 ; katas recadrés en briefs clients). Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
+Statut : étape 2, version 2, validée le 2026-10-19 ; amendée le 2026-10-19 (plafond de tokens, catégories d'erreur, ADR 0005 ; katas recadrés en briefs clients) et le 2026-10-20 (Anthropic seul en T1, OpenAI en Could). Date : 2026-10-19. Source : `docs/intent.md` v4, validée et amendée le 2026-10-19.
 
 ## 1. Périmètre
 
@@ -92,7 +92,7 @@ En tant qu'utilisateur, je veux créer un compte et me connecter, afin que mes c
 
 ### US2 Clés fournisseur
 
-En tant qu'utilisateur connecté, je veux enregistrer ma clé API OpenAI ou Anthropic, afin que KatAI appelle mon modèle à mes frais sans jamais exposer ma clé.
+En tant qu'utilisateur connecté, je veux enregistrer ma clé API Anthropic (OpenAI passe en Could le 2026-10-20), afin que KatAI appelle mon modèle à mes frais sans jamais exposer ma clé.
 
 - **CA2.1** Étant donné un utilisateur sans clé Anthropic, quand il saisit une clé de forme valide et l'enregistre, alors :
   - le serveur la chiffre et la stocke ;
