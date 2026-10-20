@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import type { AttemptView } from "../../../lib/attempts.ts";
-import { readAttempt, watchKataAttempts } from "../../../lib/attempt-reader.ts";
+import type { AttemptView } from "../../../lib/attempts/view.ts";
+import { readAttempt, watchKataAttempts } from "../../../lib/attempts/reader.ts";
 import { signOutUser, signUp } from "../../../lib/auth/service.ts";
 import { getClientAuth } from "../../../lib/firebase/client.ts";
 import { createAttempt, type NewAttempt } from "../../../lib/server/data/attempts.ts";

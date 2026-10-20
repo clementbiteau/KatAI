@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { AttemptView } from "../../../lib/attempts.ts";
+import type { AttemptView } from "../../../lib/attempts/view.ts";
 import type { KataAttempts } from "../../../components/history/use-kata-attempts.ts";
 
 let kataAttempts: KataAttempts = { status: "loading" };

@@ -9,8 +9,8 @@ import {
   type DocumentData,
   type Timestamp,
 } from "firebase/firestore";
-import { attemptViewFromData, type AttemptView } from "./attempts.ts";
-import { getClientDb } from "./firebase/client.ts";
+import { attemptViewFromData, type AttemptView } from "./view.ts";
+import { getClientDb } from "../firebase/client.ts";
 
 // Browser-side reads of the user's own attempts. The client only reads; the Firestore
 // rules allow it for the owner's documents only (docs/adr/0003, S2).

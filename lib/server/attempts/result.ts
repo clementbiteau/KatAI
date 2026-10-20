@@ -1,5 +1,5 @@
 import "server-only";
-import type { AttemptResult, AttemptView } from "../../attempts.ts";
+import type { AttemptResult, AttemptView } from "../../attempts/view.ts";
 import { findKata } from "../../../katas/catalog.ts";
 import { getAdminDb } from "../firebase-admin.ts";
 import { saveAttemptResult } from "../data/attempts.ts";

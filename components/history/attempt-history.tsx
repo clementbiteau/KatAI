@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import type { AttemptView } from "../../lib/attempts.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
 import { describeAttemptScore, formatAttemptDate, formatDuration, modelLabel } from "./attempt-format.ts";
 import { useKataAttempts } from "./use-kata-attempts.ts";
 

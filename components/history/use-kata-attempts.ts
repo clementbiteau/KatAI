@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { AttemptView } from "../../lib/attempts.ts";
-import { watchKataAttempts } from "../../lib/attempt-reader.ts";
+import type { AttemptView } from "../../lib/attempts/view.ts";
+import { watchKataAttempts } from "../../lib/attempts/reader.ts";
 
 export type KataAttempts = { status: "loading" } | { status: "ready"; attempts: AttemptView[] } | { status: "error" };
 
