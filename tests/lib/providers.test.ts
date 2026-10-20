@@ -20,7 +20,7 @@ describe("validateProviderKey (CA2.5)", () => {
 describe("isProvider", () => {
   it("only accepts the closed list of providers", () => {
     expect(isProvider("anthropic")).toBe(true);
-    expect(isProvider("openai")).toBe(true);
+    expect(isProvider("openai")).toBe(false);
     expect(isProvider("other")).toBe(false);
     expect(isProvider(undefined)).toBe(false);
   });

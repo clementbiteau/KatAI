@@ -31,7 +31,7 @@ describe("provider key encryption (docs/adr/0004)", () => {
   it("refuses a ciphertext moved to another user or provider", () => {
     const encrypted = encryptProviderKey(providerKey, "alice:anthropic");
     expect(() => decryptProviderKey(encrypted, "bob:anthropic")).toThrow();
-    expect(() => decryptProviderKey(encrypted, "alice:openai")).toThrow();
+    expect(() => decryptProviderKey(encrypted, "alice:other-provider")).toThrow();
   });
 
   it("refuses a tampered ciphertext or authentication tag", () => {

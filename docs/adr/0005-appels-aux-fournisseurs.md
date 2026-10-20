@@ -105,3 +105,17 @@ Avant chaque appel, une transaction sur `usage/{uid}` :
 
 - Les deux réponses contiennent un seul bloc de code exploitable, sans `export`.
 - Un premier essai avec une valeur qui n'était pas une clé a été refusé par Anthropic (`401 authentication_error`), puis classé en `key-refused` en un seul appel. C'est le comportement attendu (CA4.5).
+
+## Amendement du 2026-10-20 : OpenAI passe en Could
+
+Sur décision du porteur du projet, la tranche 1 ne propose qu'Anthropic. `PROVIDERS` ne contient plus que `anthropic`, si bien que l'interface ne propose plus d'enregistrer une clé OpenAI, qui serait inutilisable. L'architecture reste prête pour un second fournisseur : contrat `Generation`, prompt partagé, catégories d'erreur communes (`categorizeHttpStatus`).
+
+**Vérification déjà faite, à reconfirmer au moment de l'implémentation**
+- SDK officiel `openai` 7.39.0. Ses types listent notamment `gpt-6.1-sol`, `gpt-6-sol`, `gpt-6-luna`, `gpt-6-astra`, la famille `gpt-5.6` et des modèles « codex » (`gpt-5.1-codex`, `gpt-5.1-codex-max`, `gpt-5-codex`).
+- Documentation officielle :
+  - l'API Responses est recommandée, et l'effort se règle par `reasoning.effort` ;
+  - GPT-6.1 Sol n'accepte pas l'effort `none` (`low` au minimum).
+- Prix relevés par million de tokens (entrée / sortie) : GPT-6 Astra 10 $ / 50 $, GPT-6 Sol 2 $ / 10 $, GPT-6 Luna 0,10 $ / 0,50 $. Aucun prix trouvé pour `gpt-6.1-sol`.
+- Les pages consultées se contredisent par endroits, sur les noms et sur des valeurs par défaut héritées de GPT-5.6. Elles sont à revérifier avant de coder.
+- Sources : https://developers.openai.com/api/docs/guides/latest-model, https://developers.openai.com/api/docs/pricing, https://developers.openai.com/api/docs/guides/reasoning, https://openai.com/index/introducing-gpt-6-sol-and-luna/.
+- À neutraliser dans l'adaptateur, comme pour Anthropic : les variables d'environnement lues par le SDK (`OPENAI_BASE_URL`, `OPENAI_API_KEY`, organisation et projet).

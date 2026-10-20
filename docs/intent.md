@@ -1,6 +1,6 @@
 # KatAI : intention et priorisation
 
-Statut : étape 1, version 4, validée le 2026-10-16 ; amendée le 2026-10-19 (ajout du mode Randori, élément 12 ; recadrage des katas par étape du cycle de développement, élément 13). Date : 2026-10-16.
+Statut : étape 1, version 4, validée le 2026-10-16 ; amendée le 2026-10-19 (ajout du mode Randori, élément 12 ; recadrage des katas par étape du cycle de développement, élément 13) ; amendée le 2026-10-20 (OpenAI passe en Could). Date : 2026-10-16.
 
 ## 1. Objectif
 
@@ -23,7 +23,7 @@ Offrir un dojo où l'on s'entraîne à écrire des spécifications qu'un modèle
 ## 4. Parcours cœur (tranche 1)
 
 1. Je me connecte.
-2. J'enregistre ma clé API OpenAI ou Anthropic. Elle est chiffrée côté serveur et ne m'est plus jamais renvoyée.
+2. J'enregistre ma clé API Anthropic (OpenAI passe en Could le 2026-10-20). Elle est chiffrée côté serveur et ne m'est plus jamais renvoyée.
 3. Je choisis un kata : un énoncé et la signature de la fonction attendue. Les tests ne sont pas affichés.
 4. J'écris ma spécification.
 5. Le serveur appelle mon modèle avec ma spécification, et le modèle renvoie du code.
@@ -57,7 +57,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
   - son installation est proposée en étape 5, sur ton accord ;
   - la CLI Firebase 15.9.1, Node 26 et Docker sont présents.
 - **Stack** : libre, choisie en étape 3.
-- **Fournisseurs LLM** : OpenAI et Anthropic, avec la clé API de l'utilisateur.
+- **Fournisseurs LLM** : Anthropic en tranche 1, avec la clé API de l'utilisateur. OpenAI passe en Could (décision du porteur du projet, 2026-10-20).
 - **Qualité du code**, contrôlée en CI :
   - au plus 5 fonctions par fichier, 5 fichiers par dossier et 3 niveaux de sous-dossiers ;
   - une fonction, c'est toute définition de fonction dans le code (voir Q5 pour les fonctions anonymes) ;
@@ -96,7 +96,7 @@ La saisie initiale de la clé passe forcément par le navigateur. R3 porte sur t
 |---|---|---|---|---|
 | 1 | Authentification | Must | Sans identité, pas de clé personnelle ni d'essais à soi | T1 |
 | 2 | Base de données (Firebase, à la place de Supabase) et règles de sécurité testées | Must | Toutes les données sont personnelles ; des règles non testées sont la première source de fuite | T1 |
-| 3 | LLM apporté par l'utilisateur | Must | C'est le cœur du kata. Liste fermée OpenAI et Anthropic, appel en une passe | T1 |
+| 3 | LLM apporté par l'utilisateur | Must | C'est le cœur du kata. Appel en une passe, liste fermée de modèles. Anthropic en T1 ; OpenAI passe en Could le 2026-10-20 | T1 |
 | 4 | Bac à sable | Must | Sans exécution, pas de score objectif (option A). Version 1 dans le navigateur, version 2 côté serveur | T1, puis T2 |
 | 8 | Enregistrement et comparaison des essais | Must | C'est un critère de réussite et ce qui rend le progrès visible | T1 |
 | 11 | README soigné | Must | Le produit est fait pour être utilisé et repris. Version minimale en T1 (installer, lancer, sécurité), version soignée en T2 | T1, puis T2 |
@@ -134,7 +134,7 @@ Secteurs des 3 premiers briefs : retail (facile), luxe (moyen), banque (difficil
 
 - Authentification Firebase (méthode choisie en étape 3).
 - Modèle de données minimal (katas, clés, essais), règles de sécurité et leurs tests sur l'émulateur.
-- Clés OpenAI et Anthropic chiffrées ; appel en une passe depuis une route serveur.
+- Clé Anthropic chiffrée ; appel en une passe depuis une route serveur. OpenAI passe en Could (2026-10-20).
 - 3 spec katas originaux (retail, luxe, banque), rédigés comme des briefs clients, résolus en JavaScript et exécutés dans le navigateur de façon isolée, avec un délai maximal. Chaque kata affiche son étape du cycle et la compétence qu'il entraîne.
 - Essais enregistrés (spécification, code, résultat, modèle, durée, tokens, erreur).
 - Comparaison de deux essais en deux colonnes. La mise en évidence des différences passe en T2, pour garder la tranche fine.
@@ -166,6 +166,7 @@ La CI n'est jamais coupée.
 - Succès.
 - Équipes.
 - Mode agent multi-tours, si Q1 est confirmée.
+- Fournisseur OpenAI (Could, décision du 2026-10-20). Les vérifications déjà faites sont consignées dans l'ADR 0005.
 - Framing katas (cadrage, conception, plan) notés par un modèle juge (section 8 bis).
 - Randori enchaînant plusieurs étapes du cycle sur un même brief.
 

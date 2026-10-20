@@ -31,7 +31,9 @@ describe("GET /api/keys", () => {
       keyVersion: 1,
       updatedAt,
     });
-    await getAdminDb().doc(`providerKeys/${bob.uid}_openai`).set({ uid: bob.uid, provider: "openai", updatedAt });
+    await getAdminDb()
+      .doc(`providerKeys/${bob.uid}_anthropic`)
+      .set({ uid: bob.uid, provider: "anthropic", updatedAt: new Date("2026-10-18T08:00:00Z") });
 
     const response = await GET(apiRequest("/api/keys", { token: alice.idToken }));
     expect(response.status).toBe(200);
@@ -39,10 +41,7 @@ describe("GET /api/keys", () => {
     const text = await response.text();
     expect(text).not.toContain("opaque-ciphertext");
     expect(JSON.parse(text)).toEqual({
-      keys: [
-        { provider: "anthropic", configured: true, updatedAt: "2026-10-19T10:00:00.000Z" },
-        { provider: "openai", configured: false, updatedAt: null },
-      ],
+      keys: [{ provider: "anthropic", configured: true, updatedAt: "2026-10-19T10:00:00.000Z" }],
     });
   });
 });

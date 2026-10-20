@@ -1,12 +1,13 @@
 // Model providers users can connect, in display order (closed list, docs/adr/0005).
-export const PROVIDERS = ["anthropic", "openai"] as const;
+// Tranche 1 supports Anthropic only; OpenAI was moved to Could on 2026-10-20 (docs/intent.md).
+export const PROVIDERS = ["anthropic"] as const;
 
 export type Provider = (typeof PROVIDERS)[number];
 
 // What the API returns about a key: whether it exists and when it was saved, never the key.
 export type ProviderKeyStatus = { provider: Provider; configured: boolean; updatedAt: string | null };
 
-export const PROVIDER_NAMES: Record<Provider, string> = { anthropic: "Anthropic", openai: "OpenAI" };
+export const PROVIDER_NAMES: Record<Provider, string> = { anthropic: "Anthropic" };
 
 export function isProvider(value: unknown): value is Provider {
   return typeof value === "string" && (PROVIDERS as readonly string[]).includes(value);
