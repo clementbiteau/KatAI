@@ -21,46 +21,48 @@ export function AttemptHistory({ uid, kataId }: { uid: string; kataId: string })
 
   if (history.status === "loading") return <p role="status">Loading your attempts…</p>;
   if (history.status === "error") return <p role="alert">Your attempts could not be loaded. Please reload the page.</p>;
-  if (history.attempts.length === 0) return <p>No attempt yet. Write your first spec above.</p>;
+  if (history.attempts.length === 0) return <p className="empty-state">No attempt yet. Write your first spec above.</p>;
   const olderFirst = history.attempts.map((attempt) => attempt.id).filter((id) => selected.includes(id)).reverse();
   return (
     <>
-      <table className="attempt-table">
-        <thead>
-          <tr>
-            <th scope="col">Date</th>
-            <th scope="col">Model</th>
-            <th scope="col">Score</th>
-            <th scope="col">Duration</th>
-            <th scope="col">Status</th>
-            <th scope="col">
-              <span className="visually-hidden">Details and selection</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {history.attempts.map((attempt) => (
-            <tr key={attempt.id}>
-              <td>{formatAttemptDate(attempt.createdAt)}</td>
-              <td>{modelLabel(attempt)}</td>
-              <td>{describeAttemptScore(attempt)}</td>
-              <td>{formatDuration(attempt.latencyMs)}</td>
-              <td>{STATUS_TEXT[attempt.status]}</td>
-              <td className="attempt-actions">
-                <Link href={`/attempts/${attempt.id}`}>View</Link>
-                <input
-                  type="checkbox"
-                  aria-label={`Select the attempt of ${formatAttemptDate(attempt.createdAt)} for comparison`}
-                  checked={selected.includes(attempt.id)}
-                  onChange={() => toggle(attempt.id)}
-                />
-              </td>
+      <div className="table-scroll">
+        <table className="attempt-table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Model</th>
+              <th scope="col">Score</th>
+              <th scope="col">Duration</th>
+              <th scope="col">Status</th>
+              <th scope="col">
+                <span className="visually-hidden">Details and selection</span>
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {history.attempts.map((attempt) => (
+              <tr key={attempt.id}>
+                <td>{formatAttemptDate(attempt.createdAt)}</td>
+                <td>{modelLabel(attempt)}</td>
+                <td>{describeAttemptScore(attempt)}</td>
+                <td>{formatDuration(attempt.latencyMs)}</td>
+                <td>{STATUS_TEXT[attempt.status]}</td>
+                <td className="attempt-actions">
+                  <Link href={`/attempts/${attempt.id}`}>View</Link>
+                  <input
+                    type="checkbox"
+                    aria-label={`Select the attempt of ${formatAttemptDate(attempt.createdAt)} for comparison`}
+                    checked={selected.includes(attempt.id)}
+                    onChange={() => toggle(attempt.id)}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {history.attempts.length < 2 ? (
-        <p>Make at least two attempts to compare them.</p>
+        <p className="hint">Make at least two attempts to compare them.</p>
       ) : (
         <button
           type="button"

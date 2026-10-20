@@ -26,7 +26,7 @@ export function AttemptDetail({ id }: { id: string }) {
   }, [id]);
 
   if (loaded.status === "loading") return <p role="status">Loading the attempt…</p>;
-  if (loaded.status === "missing") return <p>Attempt not found.</p>;
+  if (loaded.status === "missing") return <p className="empty-state">Attempt not found.</p>;
   const { attempt } = loaded;
   const kata = findKata(attempt.kataId);
   return (

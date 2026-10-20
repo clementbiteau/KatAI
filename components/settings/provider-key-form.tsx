@@ -58,7 +58,7 @@ export function ProviderKeyForm({ status, onStatusChange }: Props) {
           Save key
         </button>
         {status.configured && (
-          <button type="button" disabled={pending} onClick={() => send(authorizedFetch(`/api/keys?provider=${status.provider}`, { method: "DELETE" }))}>
+          <button type="button" className="button-secondary" disabled={pending} onClick={() => send(authorizedFetch(`/api/keys?provider=${status.provider}`, { method: "DELETE" }))}>
             Delete key
           </button>
         )}

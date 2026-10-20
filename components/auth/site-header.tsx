@@ -15,28 +15,34 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <Link href="/" className="site-brand">
-        KatAI
-      </Link>
-      <nav aria-label="Account">
-        <Link href="/katas">Katas</Link>
-        <Link href="/randori">Randori</Link>
-        {state.status === "signed-in" && (
-          <>
-            <span className="site-account">{state.user.email}</span>
-            <Link href="/settings">Settings</Link>
-            <button type="button" onClick={handleSignOut}>
-              Sign out
-            </button>
-          </>
-        )}
-        {state.status === "signed-out" && (
-          <>
-            <Link href="/login">Sign in</Link>
-            <Link href="/signup">Create account</Link>
-          </>
-        )}
-      </nav>
+      <div className="site-header-inner">
+        <Link href="/" className="site-brand">
+          KatAI
+        </Link>
+        <nav aria-label="Main" className="site-nav">
+          <Link href="/katas">Katas</Link>
+          <Link href="/randori">Randori</Link>
+        </nav>
+        <nav aria-label="Account" className="site-nav site-account">
+          {state.status === "signed-in" && (
+            <>
+              <span className="site-email">{state.user.email}</span>
+              <Link href="/settings">Settings</Link>
+              <button type="button" className="button-quiet" onClick={handleSignOut}>
+                Sign out
+              </button>
+            </>
+          )}
+          {state.status === "signed-out" && (
+            <>
+              <Link href="/login">Sign in</Link>
+              <Link href="/signup" className="button button-small">
+                Create account
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
     </header>
   );
 }

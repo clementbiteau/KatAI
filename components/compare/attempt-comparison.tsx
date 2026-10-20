@@ -27,33 +27,35 @@ export function AttemptComparison({ firstId, secondId }: { firstId: string; seco
   }, [firstId, secondId]);
 
   if (loaded.status === "loading") return <p role="status">Loading the attempts…</p>;
-  if (loaded.status === "problem") return <p>{loaded.message}</p>;
+  if (loaded.status === "problem") return <p className="empty-state">{loaded.message}</p>;
   const [left, right] = loaded.pair;
   const kata = findKata(left.kataId);
   return (
     <>
       <p>Kata: {kata ? <Link href={`/katas/${kata.id}`}>{kata.title}</Link> : left.kataId}</p>
-      <table className="comparison-table">
-        <thead>
-          <tr>
-            <th scope="col">
-              <span className="visually-hidden">Field</span>
-            </th>
-            <th scope="col">Older attempt</th>
-            <th scope="col">Newer attempt</th>
-          </tr>
-        </thead>
-        <tbody>
-          {buildComparisonRows(left, right).map((row) => (
-            <tr key={row.label}>
-              <th scope="row">{row.label}</th>
-              {row.values.map((value, index) => (
-                <td key={index}>{row.preformatted && value !== "—" ? <pre className="attempt-code">{value}</pre> : value}</td>
-              ))}
+      <div className="table-scroll">
+        <table className="comparison-table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <span className="visually-hidden">Field</span>
+              </th>
+              <th scope="col">Older attempt</th>
+              <th scope="col">Newer attempt</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {buildComparisonRows(left, right).map((row) => (
+              <tr key={row.label}>
+                <th scope="row">{row.label}</th>
+                {row.values.map((value, index) => (
+                  <td key={index}>{row.preformatted && value !== "—" ? <pre className="attempt-code">{value}</pre> : value}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

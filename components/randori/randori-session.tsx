@@ -37,7 +37,7 @@ function RandoriPanel({ randori, offsetMs, onAbandoned }: { randori: RandoriView
       ) : (
         <p>
           {summary.text}{" "}
-          <button type="button" onClick={handleAbandon}>
+          <button type="button" className="button-secondary" onClick={handleAbandon}>
             Abandon
           </button>
         </p>
@@ -78,7 +78,7 @@ export function RandoriSession({ id }: { id: string }) {
   }, [id]);
 
   if (loaded.status === "loading") return <p role="status">Loading the randori…</p>;
-  if (loaded.status === "missing") return <p>Randori not found.</p>;
+  if (loaded.status === "missing") return <p className="empty-state">Randori not found.</p>;
   return (
     <RandoriPanel
       randori={loaded.randori}
