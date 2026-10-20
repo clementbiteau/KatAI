@@ -85,3 +85,13 @@ Avant chaque appel, une transaction sur `usage/{uid}` :
 
 - **Injection de prompt** : la spécification vient de l'utilisateur lui-même. La sortie du modèle est traitée comme du code non fiable : bac à sable (ADR 0006), affichage en texte seul. Le point sera à revoir en T3, avec les assets partagés.
 - **Coûts** : ils sont à la charge de l'utilisateur. Plafond de tokens, limite d'essais et affichage des tokens consommés. Aucun coût de modèle pour la plateforme.
+
+## Amendement du 2026-10-20 : adaptateur Anthropic réalisé (T12)
+
+- **Repli côté serveur.** Il n'est envoyé qu'à `claude-opus-5-5` et `claude-sonnet-5-5` : en-tête bêta `server-side-fallback-2026-07-01` et `fallbacks: "default"`. La référence d'Anthropic indique que Claude Haiku 5.5 n'a pas de repli côté serveur et ne doit pas recevoir ce paramètre.
+- **Identifiants.** En plus de `apiKey` explicite et de `baseURL` fixe, `authToken` est forcé à `null`. Sans cela, le SDK lirait `ANTHROPIC_AUTH_TOKEN` dans l'environnement et pourrait l'envoyer.
+- **Extraction du code.** On prend le premier bloc JavaScript (`javascript`, `js`, `jsx`, `mjs` ou sans langage), après avoir retiré les mots-clés `export` (ADR 0006). Sans bloc exploitable, le code est vide (CA4.7).
+- **Tests.**
+  - Le vrai SDK tourne contre un `fetch` simulé et injecté. Les tests vérifient la requête réellement émise : adresse, en-têtes, clé de l'utilisateur, effort, plafond de tokens, repli, absence de nouvelle tentative, correspondance des erreurs.
+  - Deux mutations sont détectées : le retrait de l'adresse fixe et le retour aux nouvelles tentatives par défaut.
+- **Vérification réelle.** Elle se fait hors CI avec `npm run smoke:provider`, lancé par le porteur du projet avec sa clé dans `KATAI_SMOKE_KEY`. Le script n'affiche jamais la clé et n'exécute jamais le code généré.
