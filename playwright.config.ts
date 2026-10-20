@@ -11,6 +11,9 @@ export default defineConfig({
   retries: 0,
   reporter: process.env.CI ? "github" : "list",
   use: { baseURL: `http://localhost:${port}` },
+  // Pages render per request (CSP nonce) and talk to the emulators: under a full parallel
+  // run, a step can take longer than the default 5 seconds.
+  expect: { timeout: 10_000 },
   projects: [
     { name: "chromium", use: { ...devices["Desktop Chrome"] } },
     { name: "firefox", use: { ...devices["Desktop Firefox"] } },

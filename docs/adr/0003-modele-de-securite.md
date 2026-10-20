@@ -75,3 +75,19 @@ B : le client lit, le serveur écrit.
 - **Une seule conversion des documents.** `attemptViewFromData` (`lib/attempts.ts`) sert au serveur comme au navigateur.
 - **Limite d'essais et contention.** La transaction de la limite d'essais (T14) passe à 10 tentatives au plus. Le test des requêtes parallèles, instable une fois sur trois sur l'émulateur, est stabilisé à 6 requêtes avec un délai adapté : il vérifie l'exactitude, pas la vitesse.
 - **Déconnexion.** Elle ne déclenche plus de navigation : la garde des pages protégées est la seule à rediriger. Les tests de bout en bout sous Firefox et WebKit ont révélé une course entre deux navigations, désormais supprimée.
+
+## Amendement du 2026-10-20 : sécurité transverse réalisée (T20)
+
+- **CSP à nonce** (`proxy.ts`, `lib/content-security-policy.ts`) : un nonce neuf par requête, que Next.js applique à ses propres scripts.
+  - `script-src` : `'self'`, le nonce, l'empreinte SHA-256 du script d'amorçage du bac à sable, et `blob:` pour son worker. Ni `'unsafe-inline'` ni `'unsafe-eval'` en production.
+  - `'strict-dynamic'` est écarté : il désactiverait `blob:`, que le worker du bac à sable utilise pour charger le code généré.
+  - `connect-src` : uniquement les points d'accès Firebase, plus les émulateurs pour les builds de test.
+  - `frame-ancestors 'none'`, `object-src 'none'`, `form-action 'self'`, et `upgrade-insecure-requests` hors émulateurs.
+- **Attributs `style` en ligne autorisés** (`style-src-attr 'unsafe-inline'`). WebKit applique des attributs `style` à ses propres contrôles de formulaire (`<select>`) et signalait des violations. Les éléments et feuilles de style restent soumis au nonce. Un attribut de style n'exécute pas de script et ne peut pas utiliser de sélecteurs.
+- **Rendu à la demande.** Le nonce n'existe qu'à la requête, donc toutes les pages sont rendues à la demande (`await connection()` dans la disposition racine).
+- **Firebase Auth sans fenêtre surgissante ni redirection** (`initializeAuth` avec persistance IndexedDB, puis local storage). KatAI n'utilise que l'e-mail et le mot de passe : le SDK ne charge plus le script `apis.google.com/js/api.js`, que la CSP refusait sous WebKit.
+- **En-têtes sur toutes les réponses** : `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security`, `Cross-Origin-Opener-Policy`.
+- **S7.** Un test vérifie que le code serveur n'appelle jamais `fetch` directement et ne contient aucune adresse hors de la liste fermée (`api.anthropic.com`).
+- **S8 et journaux.** KatAI n'écrit aucun journal applicatif en T1. Les tests espions de console vérifient que les routes de clés et de soumission ne journalisent jamais la clé. Un journal structuré avec masquage viendra avec l'observabilité (T2), pour ne pas livrer de code sans usage.
+- **Bug révélé par les tests sous charge, corrigé.** Un formulaire rempli avant l'hydratation perdait sa saisie : le champ affichait le texte, mais l'état React restait vide. Les formulaires de connexion, d'inscription et de réinitialisation lisent désormais leurs champs au moment de l'envoi.
+- **Vérification.** Un test de bout en bout contrôle les en-têtes et l'unicité du nonce, puis fait un essai complet (Firebase, modèle, iframe et worker du bac à sable) sans aucune violation de CSP dans les 3 navigateurs. La suite complète est passée 3 fois de suite (66/66).

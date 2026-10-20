@@ -1,10 +1,10 @@
 // Document loaded into the sandboxed iframe (docs/adr/0006-bac-a-sable-navigateur.md).
 // The iframe has sandbox="allow-scripts" only, so its origin is opaque: no access
 // to the page, its cookies or its storage. Its CSP forbids every network request.
-// The bootstrap script is static on purpose, so its hash can be allowed by the
-// application's own CSP (task T20). It only relays messages; it never runs model code.
+// The bootstrap script is static on purpose: the application's CSP allows it by its
+// SHA-256 hash (lib/content-security-policy.ts). It only relays messages; it never runs model code.
 
-const BOOTSTRAP = `(function () {
+export const SANDBOX_BOOTSTRAP = `(function () {
   var started = false;
   window.addEventListener("message", function (event) {
     if (event.source !== window.parent || started) return;
@@ -41,6 +41,6 @@ export const SANDBOX_DOCUMENT = `<!doctype html>
 <meta http-equiv="Content-Security-Policy" content="${CONTENT_SECURITY_POLICY}">
 </head>
 <body>
-<script>${BOOTSTRAP}</script>
+<script>${SANDBOX_BOOTSTRAP}</script>
 </body>
 </html>`;

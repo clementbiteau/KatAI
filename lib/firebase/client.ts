@@ -1,5 +1,11 @@
 import { getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app";
-import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  connectAuthEmulator,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  type Auth,
+} from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
 
 // Public Firebase web configuration (identifiers, not secrets: security relies on
@@ -38,7 +44,11 @@ function getClients(): { auth: Auth; db: Firestore } | null {
     return clients;
   }
   const app: FirebaseApp = getApps()[0] ?? initializeApp(settings.config);
-  clients = { auth: getAuth(app), db: getFirestore(app) };
+  // initializeAuth without a popup or redirect resolver: KatAI signs in with email and
+  // password only, so the SDK never needs to load Google's api.js script, which the CSP
+  // refuses (T20). The session persists in IndexedDB, or local storage as a fallback.
+  const auth = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence] });
+  clients = { auth, db: getFirestore(app) };
   if (settings.useEmulators) {
     const authHost = process.env.FIREBASE_AUTH_EMULATOR_HOST ?? "127.0.0.1:9099";
     const [firestoreHost = "127.0.0.1", firestorePort = "8080"] = (process.env.FIRESTORE_EMULATOR_HOST ?? "127.0.0.1:8080").split(":");
