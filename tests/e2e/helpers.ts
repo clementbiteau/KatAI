@@ -31,3 +31,10 @@ export function toGeneratedCode(kataId: string, functionName: string, solution: 
   });
   return `${outputText.replace(/^export /gm, "")}\nvar ${functionName} = ${solution};\n`;
 }
+
+export async function saveAnthropicKey(page: Page) {
+  await page.goto("/settings");
+  await page.getByLabel("Anthropic API key").fill("sk-ant-e2e-" + "k".repeat(40));
+  await page.getByRole("button", { name: "Save key" }).click();
+  await expect(page.getByText(/Configured on/)).toBeVisible();
+}

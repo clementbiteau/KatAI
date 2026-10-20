@@ -20,6 +20,7 @@ export function SiteHeader() {
       </Link>
       <nav aria-label="Account">
         <Link href="/katas">Katas</Link>
+        <Link href="/randori">Randori</Link>
         {state.status === "signed-in" && (
           <>
             <span className="site-account">{state.user.email}</span>

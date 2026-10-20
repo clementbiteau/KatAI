@@ -12,17 +12,20 @@ import { useAttempt } from "./use-attempt.ts";
 
 const MODELS = PROVIDER_MODELS.anthropic;
 
+type AttemptFormProps = { kata: Kata; randoriId?: string | null; closed?: boolean };
+
 // Spec editor and attempt flow. The brief stays on the page: the model never receives it (H2).
-function AttemptForm({ kata }: { kata: Kata }) {
+// In a randori, `closed` disables submission once the time is up (CA7.4).
+export function AttemptForm({ kata, randoriId = null, closed = false }: AttemptFormProps) {
   const [spec, setSpec] = useState("");
   const [model, setModel] = useState(MODELS[0]?.id ?? "");
-  const { state, submit } = useAttempt(kata);
+  const { state, submit } = useAttempt(kata, randoriId);
   const busy = state.phase === "generating" || state.phase === "running";
   const tooLong = spec.length > MAX_SPEC_LENGTH;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!busy && !validateSpec(spec)) void submit(spec, model);
+    if (!busy && !closed && !validateSpec(spec)) void submit(spec, model);
   };
 
   return (
@@ -46,7 +49,7 @@ function AttemptForm({ kata }: { kata: Kata }) {
             ))}
           </select>
         </label>
-        <button type="submit" disabled={busy || validateSpec(spec) !== null}>
+        <button type="submit" disabled={busy || closed || validateSpec(spec) !== null}>
           {busy ? "Generating…" : "Generate and test"}
         </button>
       </form>

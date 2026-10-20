@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { KATAS } from "../../katas/catalog.ts";
-import { runKataTests } from "../../katas/evaluate.ts";
-import { toGeneratedCode } from "./helpers.ts";
+import { KATAS } from "../../../katas/catalog.ts";
+import { runKataTests } from "../../../katas/evaluate.ts";
+import { toGeneratedCode } from "../helpers.ts";
 
 // Runs on a production build (npm run test:e2e), so it also proves that the
 // evaluator survives the Next.js production compiler once serialized into the worker.
 
 async function expectedPassCount(kataId: string, solution: "reference" | "naive"): Promise<number> {
-  const solutions = await import(`../katas/solutions/${kataId}.ts`);
+  const solutions = await import(`../../katas/solutions/${kataId}.ts`);
   const kata = KATAS.find((candidate) => candidate.id === kataId)!;
   return runKataTests(solutions[solution], kata.tests).filter((outcome) => outcome.status === "passed").length;
 }

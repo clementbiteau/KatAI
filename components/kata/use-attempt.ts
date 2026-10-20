@@ -37,8 +37,9 @@ async function saveResult(attempt: AttemptView, report: SandboxReport): Promise<
 }
 
 // One attempt: the server calls the model, the browser sandbox runs the code against the
-// kata's tests, then the score is saved once (US4).
-export function useAttempt(kata: Kata) {
+// kata's tests, then the score is saved once (US4). Inside a randori, the attempt is
+// linked to it and the server checks its deadline (US7).
+export function useAttempt(kata: Kata, randoriId: string | null = null) {
   const [state, setState] = useState<AttemptState>({ phase: "idle" });
 
   const submit = useCallback(
@@ -46,7 +47,7 @@ export function useAttempt(kata: Kata) {
       setState({ phase: "generating" });
       const response = await authorizedFetch("/api/attempts", {
         method: "POST",
-        body: { kataId: kata.id, provider: "anthropic", model, spec },
+        body: { kataId: kata.id, provider: "anthropic", model, spec, randoriId },
       }).catch(() => null);
       if (!response || response.status === 401) return setState(SESSION_EXPIRED);
       const body = (await response.json()) as { attempt?: AttemptView; error?: string; code?: string };
@@ -67,7 +68,7 @@ export function useAttempt(kata: Kata) {
       const saved = await saveResult(attempt, report);
       setState({ phase: "done", attempt: saved.attempt, report, saveError: saved.saveError });
     },
-    [kata],
+    [kata, randoriId],
   );
 
   return { state, submit };
