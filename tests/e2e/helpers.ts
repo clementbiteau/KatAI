@@ -15,6 +15,8 @@ export async function signUp(page: Page, email: string, password: string) {
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Create account" }).click();
   await expect(page.getByRole("navigation", { name: "Account" })).toContainText(email);
+  // Sign-up ends with a navigation to the home page: wait for it, or the next page.goto races with it.
+  await expect(page).toHaveURL("/");
 }
 
 export async function signOut(page: Page) {
