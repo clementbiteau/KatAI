@@ -6,10 +6,7 @@ import type { AuthState } from "../../../components/auth/auth-context.tsx";
 const replace = vi.fn();
 let authState: AuthState = { status: "loading" };
 
-vi.mock("next/navigation", () => ({
-  useRouter: () => ({ replace }),
-  usePathname: () => "/settings",
-}));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ replace }) }));
 vi.mock("../../../components/auth/auth-context.tsx", () => ({ useAuthState: () => authState }));
 
 const { RequireAuth } = await import("../../../components/auth/require-auth.tsx");
@@ -20,10 +17,11 @@ afterEach(() => {
 });
 
 describe("RequireAuth", () => {
-  it("sends a signed-out visitor to the sign-in page, remembering where they wanted to go (CA1.7)", () => {
+  it("sends a signed-out visitor to the sign-in page, remembering the full path, query included (CA1.7)", () => {
     authState = { status: "signed-out" };
+    window.history.pushState({}, "", "/compare?a=first&b=second");
     render(<RequireAuth>Private settings</RequireAuth>);
-    expect(replace).toHaveBeenCalledWith("/login?next=%2Fsettings");
+    expect(replace).toHaveBeenCalledWith("/login?next=%2Fcompare%3Fa%3Dfirst%26b%3Dsecond");
     expect(screen.queryByText("Private settings")).toBeNull();
   });
 

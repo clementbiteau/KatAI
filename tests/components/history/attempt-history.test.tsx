@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AttemptView } from "../../../lib/attempts.ts";
 import type { KataAttempts } from "../../../components/history/use-kata-attempts.ts";
 
 let kataAttempts: KataAttempts = { status: "loading" };
+const push = vi.fn();
 vi.mock("../../../components/history/use-kata-attempts.ts", () => ({ useKataAttempts: () => kataAttempts }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 
 const { AttemptHistory } = await import("../../../components/history/attempt-history.tsx");
 
@@ -31,7 +33,10 @@ function attempt(overrides: Partial<AttemptView>): AttemptView {
   };
 }
 
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
 
 describe("AttemptHistory", () => {
   it("lists attempts with date, model, score, duration and status, in the order given (CA5.1)", () => {
@@ -56,6 +61,30 @@ describe("AttemptHistory", () => {
     kataAttempts = { status: "ready", attempts: [] };
     render(<AttemptHistory uid="alice" kataId="retail-cart" />);
     expect(screen.getByText("No attempt yet. Write your first spec above.")).toBeTruthy();
+  });
+
+  it("enables comparison with exactly two selected attempts, older first in the link (CA6.1, CA6.2)", () => {
+    kataAttempts = { status: "ready", attempts: [attempt({ id: "third" }), attempt({ id: "second" }), attempt({ id: "first" })] };
+    render(<AttemptHistory uid="alice" kataId="retail-cart" />);
+    const compare = screen.getByRole("button", { name: "Compare selected" });
+    const boxes = screen.getAllByRole("checkbox");
+    expect(compare.hasAttribute("disabled")).toBe(true);
+    fireEvent.click(boxes[0]!);
+    expect(compare.hasAttribute("disabled")).toBe(true);
+    fireEvent.click(boxes[2]!);
+    expect(compare.hasAttribute("disabled")).toBe(false);
+    fireEvent.click(boxes[1]!);
+    expect(compare.hasAttribute("disabled")).toBe(true);
+    fireEvent.click(boxes[1]!);
+    fireEvent.click(compare);
+    expect(push).toHaveBeenCalledWith("/compare?a=first&b=third");
+  });
+
+  it("explains that two attempts are needed when there is only one (CA6.3)", () => {
+    kataAttempts = { status: "ready", attempts: [attempt({ id: "only" })] };
+    render(<AttemptHistory uid="alice" kataId="retail-cart" />);
+    expect(screen.getByText("Make at least two attempts to compare them.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Compare selected" })).toBeNull();
   });
 
   it("says when the history cannot be loaded", () => {

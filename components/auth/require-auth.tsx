@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
 import { useAuthState } from "./auth-context.tsx";
 
@@ -9,11 +9,13 @@ import { useAuthState } from "./auth-context.tsx";
 export function RequireAuth({ children }: { children: ReactNode }) {
   const state = useAuthState();
   const router = useRouter();
-  const pathname = usePathname();
 
+  // The full path, query included, so that /compare?a=…&b=… survives the sign-in.
   useEffect(() => {
-    if (state.status === "signed-out") router.replace(`/login?next=${encodeURIComponent(pathname)}`);
-  }, [state.status, router, pathname]);
+    if (state.status !== "signed-out") return;
+    const next = `${window.location.pathname}${window.location.search}`;
+    router.replace(`/login?next=${encodeURIComponent(next)}`);
+  }, [state.status, router]);
 
   if (state.status === "signed-in") return <>{children}</>;
   if (state.status === "unavailable") {
