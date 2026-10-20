@@ -52,6 +52,7 @@ L'étape 5 est terminée quand T0 à T5 sont faits. Les tâches suivantes formen
 | T18 | Randori côté serveur : lancement, abandon, contrôle de l'échéance à la soumission, mise à jour au résultat, horloge injectable (ADR 0007) | L7 | 1 h | Tests contre l'émulateur : CA7.1, CA7.3 à CA7.6, CA7.8 à CA7.10, S9 |
 | T19 | Randori côté interface : compte à rebours corrigé par `serverNow`, écran de résultat, historique des randoris | L7 | 1 h | Tests des composants CA7.2, CA7.7, CA7.11 ; parcours manuel |
 | T20 | Sécurité transverse : en-têtes CSP et `frame-ancestors`, journal masquant les secrets, tests S7 et S8 | L8 | 45 min | Tests ; en-têtes vérifiés sur la prévisualisation Vercel |
+| T24 | Passe de design et d'accessibilité (ajoutée le 2026-10-20 à la demande du porteur du projet) : identité visuelle, mise en page, typographie, affichage sur mobile, contrastes, focus clavier, états vides. Préférences visuelles à recueillir au démarrage de la tâche | L8 | 2 h | Analyse d'accessibilité automatique (axe, avec Playwright) sans violation sérieuse ni critique ; captures en clair, en sombre et en largeur mobile validées par toi |
 | T21 | Projet Firebase réel (toi : création, région européenne, Auth e-mail), comptes de service et secrets Vercel et GitHub (toi). Job de déploiement des règles et des index | L8 | 45 min | Job de déploiement vert ; règles visibles dans la console Firebase |
 | T22 | Déploiement en production et parcours de bout en bout avec ta clé : 3 katas, 2 essais comparés, 1 randori | L8 | 45 min | R1, R2, R3 et R8 constatés et consignés pour `docs/retro.md` |
 | T23 | README minimal : installer, lancer, tester, sécurité, rotation de la clé maîtresse | L8 | 30 min | Une installation depuis un clone neuf, en suivant le README, passe les tests |
@@ -67,7 +68,7 @@ L'étape 5 est terminée quand T0 à T5 sont faits. Les tâches suivantes formen
 | L5 | T12 à T14 | Fournisseurs et soumission |
 | L6 | T15 à T17 | Section Kata, historique, comparaison |
 | L7 | T18 et T19 | Randori |
-| L8 | T20 à T23 | Sécurité, déploiement, README |
+| L8 | T20, T24, T21 à T23 | Sécurité, design et accessibilité, déploiement, README. T24 passe avant la mise en production (T22) |
 
 ## Ligne de coupe (intention, section 9)
 

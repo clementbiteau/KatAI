@@ -141,6 +141,7 @@ Secteurs des 3 premiers briefs : retail (facile), luxe (moyen), banque (difficil
 - Deux sections : Kata (entraînement libre) et Randori (contre la montre, chronomètre tenu par le serveur).
 - CI (tests, contrôle de structure, règles de sécurité) et déploiement automatique.
 - README minimal.
+- Passe de design et d'accessibilité avant la mise en production (ajoutée le 2026-10-20, plan T24).
 
 **Ligne de coupe**, appliquée dans cet ordre si la tranche déborde du week-end :
 1. Le Randori passe en ouverture de T2.
