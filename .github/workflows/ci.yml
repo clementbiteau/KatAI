@@ -89,3 +89,36 @@ jobs:
       - uses: ./.github/actions/setup-gitleaks
       - name: Scan the full git history
         run: gitleaks git . --redact --no-banner --exit-code 1
+
+  # Firestore rules and indexes go live only from main, after every check is green
+  # (ADR 0008). The job waits for the FIREBASE_PROJECT_ID variable, set once the real
+  # project exists. Its key lives in the "production" environment, which only main can
+  # use: pull requests never see it. The key file is deleted whatever happens.
+  deploy-firestore:
+    name: deploy-firestore
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.FIREBASE_PROJECT_ID != ''
+    needs: [quality, tests, sandbox, secrets]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Write the deploy service account key
+        env:
+          DEPLOY_KEY: ${{ secrets.FIREBASE_DEPLOY_SERVICE_ACCOUNT }}
+        run: |
+          umask 077
+          printf '%s' "$DEPLOY_KEY" | base64 --decode > "$RUNNER_TEMP/deploy-key.json"
+      - name: Deploy Firestore rules and indexes
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/deploy-key.json
+          FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+        run: npx firebase deploy --only firestore:rules,firestore:indexes --project "$FIREBASE_PROJECT_ID" --non-interactive
+      - name: Remove the key
+        if: always()
+        run: rm -f "$RUNNER_TEMP/deploy-key.json"
