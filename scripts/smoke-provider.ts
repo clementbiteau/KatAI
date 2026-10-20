@@ -5,6 +5,7 @@
 //   read -s KATAI_SMOKE_KEY && export KATAI_SMOKE_KEY
 //   npm run smoke:provider -- anthropic claude-haiku-5-5
 import { findKata } from "../katas/catalog.ts";
+import { validateProviderKey } from "../lib/providers.ts";
 import { generateWithAnthropic } from "../lib/server/providers/anthropic.ts";
 
 const SPEC = `Return the total price of a shopping cart, in integer cents.
@@ -18,6 +19,11 @@ async function main(provider: string, model: string): Promise<number> {
   const key = process.env.KATAI_SMOKE_KEY;
   if (!key) {
     console.error("Set KATAI_SMOKE_KEY first: read -s KATAI_SMOKE_KEY && export KATAI_SMOKE_KEY");
+    return 1;
+  }
+  const invalidKey = validateProviderKey(key);
+  if (invalidKey) {
+    console.error(`KATAI_SMOKE_KEY is not a usable key (${key.length} characters): ${invalidKey}`);
     return 1;
   }
   if (provider !== "anthropic") {
