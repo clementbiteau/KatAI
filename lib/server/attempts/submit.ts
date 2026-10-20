@@ -6,11 +6,13 @@ import { isProvider, isSupportedModel, type Provider } from "../../providers.ts"
 import { validateSpec } from "../../specs.ts";
 import { createAttempt } from "../data/attempts.ts";
 import { readProviderKey, saveProviderKey } from "../data/provider-keys.ts";
+import { checkRandoriOpen, countRandoriAttempt } from "../data/randori-progress.ts";
 import { reserveSubmission } from "../data/usage.ts";
 import { currentKeyVersion, decryptProviderKey, encryptProviderKey } from "../key-encryption.ts";
 import { generateCode } from "../providers/generate.ts";
 
-export type Submission = { kata: Kata; provider: Provider; model: string; spec: string };
+// randoriId links the attempt to a running randori of the caller (US7), or is null.
+export type Submission = { kata: Kata; provider: Provider; model: string; spec: string; randoriId: string | null };
 
 export type SubmitOutcome =
   | { ok: true; attempt: AttemptView }
@@ -19,13 +21,14 @@ export type SubmitOutcome =
 // Checks the request body against the closed lists and the spec limits (CA4.4).
 export function parseSubmission(body: unknown): Submission | { error: string } {
   if (typeof body !== "object" || body === null) return { error: "Invalid request." };
-  const { kataId, provider, model, spec } = body as Record<string, unknown>;
+  const { kataId, provider, model, spec, randoriId } = body as Record<string, unknown>;
   const kata = typeof kataId === "string" ? findKata(kataId) : undefined;
   if (!kata) return { error: "Unknown kata." };
   if (!isProvider(provider)) return { error: "Unknown provider." };
   if (!isSupportedModel(provider, model)) return { error: "This model is not available." };
   const invalidSpec = typeof spec === "string" ? validateSpec(spec) : "Write a specification first.";
-  return invalidSpec ? { error: invalidSpec } : { kata, provider, model, spec: spec as string };
+  if (invalidSpec) return { error: invalidSpec };
+  return { kata, provider, model, spec: spec as string, randoriId: typeof randoriId === "string" && randoriId ? randoriId : null };
 }
 
 // Decrypts the user's key for this call only (S8), and re-encrypts it with the current
@@ -46,12 +49,15 @@ function failedResult(kata: Kata) {
   return { passed: 0, total: kata.tests.length, tests: kata.tests.map((test) => ({ label: test.label, status: "failed" as const })) };
 }
 
-// Checks the key and the rate limit, calls the model once, then records the attempt
-// whatever the outcome (CA4.1, CA4.3, CA4.5 to CA4.7, CA4.11).
-export async function submitAttempt(uid: string, { kata, provider, model, spec }: Submission): Promise<SubmitOutcome> {
+// Checks the key, the randori and the rate limit, calls the model once, then records the
+// attempt whatever the outcome (CA4.1, CA4.3, CA4.5 to CA4.7, CA4.11, CA7.2, CA7.5).
+// `now` is the arrival time of the request, on the server clock.
+export async function submitAttempt(uid: string, { kata, provider, model, spec, randoriId }: Submission, now: number = Date.now()): Promise<SubmitOutcome> {
   if (!(await readProviderKey(uid, provider))) {
     return { ok: false, status: 409, code: "missing-key", error: "Add your Anthropic API key in Settings first." };
   }
+  const randoriRefusal = randoriId ? await checkRandoriOpen(uid, randoriId, kata.id, now) : null;
+  if (randoriRefusal) return { ok: false, ...randoriRefusal };
   const reservation = await reserveSubmission(uid);
   if (!reservation.allowed) {
     const { retryAfterSeconds } = reservation;
@@ -65,9 +71,11 @@ export async function submitAttempt(uid: string, { kata, provider, model, spec }
   }
   if (!apiKey) return { ok: false, status: 409, code: "missing-key", error: "Add your Anthropic API key in Settings first." };
   const generation = await generateCode(provider, apiKey, { model, spec, functionName: kata.functionName, signature: kata.signature });
-  const base = { kataId: kata.id, randoriId: null, provider, model, spec, latencyMs: generation.latencyMs, inputTokens: generation.inputTokens ?? null, outputTokens: generation.outputTokens ?? null };
+  const base = { kataId: kata.id, randoriId, provider, model, spec, latencyMs: generation.latencyMs, inputTokens: generation.inputTokens ?? null, outputTokens: generation.outputTokens ?? null };
   const attempt = generation.ok
     ? { ...base, servedModel: generation.servedModel, code: generation.code, truncated: generation.truncated, status: generation.code ? ("generated" as const) : ("done" as const), errorCategory: null, httpStatus: null, result: generation.code ? null : failedResult(kata) }
     : { ...base, servedModel: null, code: null, truncated: false, status: "error" as const, errorCategory: generation.category, httpStatus: generation.httpStatus ?? null, result: null };
-  return { ok: true, attempt: await createAttempt(uid, attempt) };
+  const created = await createAttempt(uid, attempt);
+  if (randoriId) await countRandoriAttempt(randoriId);
+  return { ok: true, attempt: created };
 }
